@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "384314013143",
+    "project_id": "login-3fe70",
+    "storage_bucket": "login-3fe70.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:384314013143:android:ffa5641e30a16e57950792",
+        "android_client_info": {
+          "package_name": "com.cookandroid.login"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRRTKGsFG9EYIXf1T0o9q5bzWpnQMkbo4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
