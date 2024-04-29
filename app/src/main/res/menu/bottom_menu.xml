@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/home"
+        android:title="홈"
+        android:enabled="true"
+        />
+
+    <item
+        android:id="@+id/star"
+        android:icon="@drawable/star"
+        android:title="즐겨찾기"
+        android:enabled="true"
+        />
+
+    <item android:id="@+id/blank"
+        android:title=""
+        android:enabled="false"/>
+
+    <item
+        android:id="@+id/group"
+        android:icon="@drawable/group"
+        android:title="친구"
+        android:enabled="true"
+        />
+    <item
+        android:id="@+id/hotel"
+        android:icon="@drawable/hotel"
+        android:title="호텔"
+        android:enabled="true"
+        />
+
+</menu>
