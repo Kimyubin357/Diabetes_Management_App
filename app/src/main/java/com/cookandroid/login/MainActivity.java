@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -24,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
 
     //바텀 네비게이션
     BottomNavigationView bottomNavigationView;
+    private Button buttonAlarm;
+
 
     private FloatingActionButton floatingActionButton;
 
@@ -87,6 +90,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
+                startActivity(intent);
+            }
+        });
+        // 버튼 찾기
+        buttonAlarm = findViewById(R.id.button_alarm);
+
+        // 클릭 이벤트 리스너 설정
+        buttonAlarm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 다른 액티비티로 이동하는 Intent 생성
+                Intent intent = new Intent(MainActivity.this, AlarmActivity.class);
                 startActivity(intent);
             }
         });
