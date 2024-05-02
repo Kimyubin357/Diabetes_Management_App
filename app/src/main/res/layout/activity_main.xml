@@ -14,12 +14,6 @@
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView">
-        <Button
-            android:id="@+id/button_alarm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="알람"
-            android:onClick="goToAlarmActivity" />
 
     </FrameLayout>
 
