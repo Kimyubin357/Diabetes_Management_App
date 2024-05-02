@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -47,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     //바텀 네비게이션
     BottomNavigationView bottomNavigationView;
+
+
 
     private FloatingActionButton floatingActionButton;
 

@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -47,6 +48,18 @@
         <activity
             android:name=".CameraActivity"
             android:exported="true" />
+
+        <activity
+            android:name=".AlarmActivity"
+            android:exported="true" />
+        <activity
+            android:name=".SetAlarm"
+            android:exported="true"/>
+        <activity
+            android:name=".ModifyAlarm"
+            android:exported="true"/>
+        <receiver
+            android:name=".AlarmReceiver" />
         <provider
             android:authorities="com.cookandroid.login"
             android:name="androidx.core.content.FileProvider"
@@ -56,6 +69,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/camera"/>
         </provider>
+
     </application>
 
 </manifest>
