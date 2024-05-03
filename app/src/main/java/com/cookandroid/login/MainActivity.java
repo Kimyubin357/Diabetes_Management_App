@@ -112,6 +112,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         ////////////////////////CAMERA////////////////////////
+        PermissionListener permissionListner = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+                Toast.makeText(getApplicationContext(),"권한이 허용됨", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onPermissionDenied(List<String> list) {
+                Toast.makeText(getApplicationContext(),"권한이 거부됨",Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        // 권한 창 생성
+        TedPermission.create()
+                .setPermissionListener(permissionListner)
+                .setDeniedMessage("거부하셨습니다.")
+                .setRationaleMessage("카메라 권한이 필요합니다.")
+                .setPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.CAMERA)
+                .check();
 
         // floatingActionButton 초기화
         floatingActionButton = findViewById(R.id.main_floating_add_btn);
@@ -122,25 +141,7 @@ public class MainActivity extends AppCompatActivity {
 //                startActivity(intent);
 
                 // 카메라 권한 있는지 확인
-                PermissionListener permissionListner = new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted() {
-                        Toast.makeText(getApplicationContext(),"권한이 허용됨", Toast.LENGTH_SHORT).show();
-                    }
 
-                    @Override
-                    public void onPermissionDenied(List<String> list) {
-                        Toast.makeText(getApplicationContext(),"권한이 거부됨",Toast.LENGTH_SHORT).show();
-                    }
-                };
-
-                // 권한 창 생성
-                TedPermission.create()
-                        .setPermissionListener(permissionListner)
-                        .setDeniedMessage("거부하셨습니다.")
-                        .setRationaleMessage("카메라 권한이 필요합니다.")
-                        .setPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.CAMERA)
-                        .check();
 
                 // 권한이 다 있다면 카메라 띄우기
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
