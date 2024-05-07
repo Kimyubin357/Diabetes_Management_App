@@ -10,7 +10,7 @@
         android:id="@+id/text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="130dp"
+        android:layout_marginTop="80dp"
         android:layout_centerHorizontal="true"
         android:text="회원가입"
         android:textSize="30sp"
@@ -18,36 +18,109 @@
         />
 
     <EditText
+        android:id="@+id/et_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text1"
+        android:layout_marginStart="30sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30sp"
+        android:hint="이름을 입력해주세요"
+        android:inputType="text"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/et_name"
+        android:layout_marginStart="30sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30sp"
+        android:focusable="false"
+        android:hint="생년월일"
+        android:inputType="date"
+        android:minHeight="48dp" />
+
+    <EditText
         android:id="@+id/et_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/date"
+        android:layout_marginStart="30sp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="30sp"
         android:hint="이메일을 입력해주세요"
         android:inputType="textEmailAddress"
-        android:layout_below="@+id/text1"
-        android:layout_marginStart="30sp"
-        android:layout_marginEnd="30sp"
-        />
+        android:minHeight="48dp" />
+
     <EditText
         android:id="@+id/et_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:hint="비밀번호를 입력해주세요"
-        android:inputType="textPassword"
         android:layout_below="@+id/et_email"
         android:layout_marginLeft="30dp"
+        android:layout_marginTop="20dp"
         android:layout_marginRight="30dp"
+        android:hint="비밀번호를 입력해주세요"
+        android:inputType="textPassword"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/height"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/et_password"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="30dp"
+        android:hint="키를 입력해주세요"
+        android:inputType="numberDecimal"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/weight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/height"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="30dp"
+        android:hint="몸무게를 입력해주세요"
+        android:inputType="numberDecimal"
+        android:minHeight="48dp" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/weight"
+        android:id="@+id/male"
+        android:text="남자"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="80dp"
         />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/weight"
+        android:id="@+id/female"
+        android:text="여자"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="80dp"
+        android:layout_toRightOf="@+id/male"
+        />
+
     <Button
         android:id="@+id/btn_join"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/et_password"
-        android:layout_marginTop="120dp"
+        android:layout_below="@+id/weight"
+        android:layout_marginTop="80dp"
         android:layout_centerHorizontal="true"
         android:textSize="30sp"
         android:text="가입완료" />
+
+
+
 
 
 </RelativeLayout>

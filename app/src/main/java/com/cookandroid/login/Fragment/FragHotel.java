@@ -1,15 +1,18 @@
 package com.cookandroid.login.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.cookandroid.login.ModifyActivity;
 import com.cookandroid.login.R;
 
 public class FragHotel extends Fragment {
@@ -23,7 +26,14 @@ public class FragHotel extends Fragment {
         Log.i(TAG, "onCreateView");
         view = inflater.inflate(R.layout.frag_hotel, container, false);
 
-
+        Button modify = (Button) view.findViewById(R.id.modify_member);
+        modify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), ModifyActivity.class);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 
