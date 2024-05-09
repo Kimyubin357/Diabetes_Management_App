@@ -19,8 +19,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private FirebaseAuth mFirebaseAuth;
-    private DatabaseReference mDatabaseRef;
+    private FirebaseAuth mAuth;
+
     private EditText mEt_id, mEt_pwd;
     private Button mEt_login, mEt_signup;
 
@@ -29,8 +29,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
 
         mEt_id = findViewById(R.id.et_id);
         mEt_pwd = findViewById(R.id.et_password);
@@ -44,23 +43,28 @@ public class LoginActivity extends AppCompatActivity {
 
                 String str_email = mEt_id.getText().toString();
                 String str_pwd = mEt_pwd.getText().toString();
+                if(str_email.length()==0||str_pwd.length()==0){
+                    Toast.makeText(LoginActivity.this,"로그인 실패",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    mAuth.signInWithEmailAndPassword(str_email,str_pwd).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
 
-                mFirebaseAuth.signInWithEmailAndPassword(str_email,str_pwd).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
-                            //로그인 성공
-                            Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }else {
-                            Toast.makeText(LoginActivity.this,"로그인 실패",Toast.LENGTH_SHORT).show();
+                            if (task.isSuccessful()){
+                                //로그인 성공
+                                Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }else {
+                                Toast.makeText(LoginActivity.this,"로그인 실패",Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
-        mEt_signup.setOnClickListener(new View.OnClickListener() {
+        mEt_signup.setOnClickListener(new View.OnClickListener() {//회원가입 버튼 눌렀을 때 이동ㅋ
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
