@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                     .setPermissionListener(permissionListner)
                     .setDeniedMessage("거부하셨습니다.")
                     .setRationaleMessage("카메라 권한이 필요합니다.")
-                    .setPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.CAMERA)
+                    .setPermissions(android.Manifest.permission.CAMERA)
                     .check();
 
             // floatingActionButton 초기화
@@ -153,25 +153,27 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view) {
 //                Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
 //                startActivity(intent);
-
+                    Log.i(TAG, "into camera");
                     // 카메라 권한 있는지 확인
-
-
                     // 권한이 다 있다면 카메라 띄우기
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    Log.i(TAG, "into camera2");
+                    intent.putExtra("key", "value"); // 예시로 putExtra를 사용하여 데이터 추가
+                    Log.i(TAG, "Intent contents: " + intent.resolveActivity(getPackageManager()));
                     if (intent.resolveActivity(getPackageManager()) != null) {
                         File photoFile = null;
-                        try { // 파일 쓰기를 할때는 항상 try catch 문을 적어야함 !
+                        try { // 파일 쓰기를 할때는 항상 try catch 문을 적어야함!
                             photoFile = createImageFile();
+                            Log.i(TAG, "EXception");
                         } catch (IOException e) {
                         }
+                        Log.i(TAG, "EXception");
                         if (photoFile != null) {
                             photoUri = FileProvider.getUriForFile(getApplicationContext(), getPackageName(), photoFile);
                             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                             startActivityResult.launch(intent); // 결과 실행
                         }
                     }
-
                 }
 
                 // 이미지 파일 만드는 함수
