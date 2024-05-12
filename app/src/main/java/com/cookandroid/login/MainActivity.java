@@ -1,5 +1,6 @@
 package com.cookandroid.login;
 
+import static android.app.ProgressDialog.show;
 import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
@@ -40,7 +41,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.normal.TedPermission;
 
-import org.pytorch.Device;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.pytorch.IValue;
 import org.pytorch.LiteModuleLoader;
 import org.pytorch.MemoryFormat;
@@ -49,12 +52,16 @@ import org.pytorch.Tensor;
 //import org.pytorch.TensorImageUtils;
 import org.pytorch.torchvision.TensorImageUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -167,28 +174,23 @@ public class MainActivity extends AppCompatActivity {
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
                     // 카메라 권한 있는지 확인
                     // 권한이 다 있다면 카메라 띄우기
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     intent.putExtra("key", "value"); // 예시로 putExtra를 사용하여 데이터 추가
                     Log.i(TAG, "Intent contents: " + intent.resolveActivity(getPackageManager()));
-                    final Context context = view.getContext(); // 버튼의 컨텍스트 얻기
 
                     Bitmap bitmap = null;
                     Module module = null;
                     try {
-                        // creating bitmap from packaged into app android asset 'image.jpg',
-                        // app/src/main/assets/image.jpg
-                        bitmap = BitmapFactory.decodeStream(getAssets().open("image.jpg"));
-                        // loading serialized torchscript module from packaged into app android asset model.pt,
-                        // app/src/model/assets/model.pt
+                        bitmap = BitmapFactory.decodeStream(getAssets().open("image5.jpg"));
                         Log.i(TAG, "image load!");
-//                        module = LiteModuleLoader.load("Efficient-Mobile2.ptl");
-//                        module = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "Efficient-Mobile3.ptl"));
                         String model_s = assetFilePath(MainActivity.this, "Efficient-Mobile3.ptl");
+
                         Log.i(TAG, "model path"+model_s);
                         module = LiteModuleLoader.load(model_s);
-//                        module = LiteModuleLoader.load("/Users/goodyoung/Desktop/GIt/Diabetes/Group_project/app/src/model/assets/Efficient-Mobile.ptl");
+
                         Log.i(TAG, "model load!");
                     } catch (IOException e) {
                         Log.e("PytorchHelloWorld", "Error reading assets", e);
@@ -202,29 +204,49 @@ public class MainActivity extends AppCompatActivity {
                     // preparing input tensor
                     final Tensor inputTensor = TensorImageUtils.bitmapToFloat32Tensor(bitmap,
                             TensorImageUtils.TORCHVISION_NORM_MEAN_RGB, TensorImageUtils.TORCHVISION_NORM_STD_RGB, MemoryFormat.CHANNELS_LAST);
-                    Log.i(TAG, "image to tensor!");
                     Log.i(TAG, "image to tensor!"+inputTensor);
-                    // running the model
+
+                    // inference model
                     final Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
                     Log.i(TAG, "model input success");
-                    // getting tensor content as java array of floats
+
+                    // tensor to java array
                     final float[] scores = outputTensor.getDataAsFloatArray();
                     Log.i("TAG", Arrays.toString(scores));
 
-//                    if (intent.resolveActivity(getPackageManager()) != null) {
-//                        File photoFile = null;
-//                        try { // 파일 쓰기를 할때는 항상 try catch 문을 적어야함!
-//                            photoFile = createImageFile();
-//                            Log.i(TAG, "EXception");
-//                        } catch (IOException e) {
-//                        }
-//                        Log.i(TAG, "EXception");
-//                        if (photoFile != null) {
-//                            photoUri = FileProvider.getUriForFile(getApplicationContext(), getPackageName(), photoFile);
-//                            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-//                            startActivityResult.launch(intent); // 결과 실행
-//                        }
-//                    }
+                    Log.i("TAG", "scores length: "+scores.length);
+                    // armax 역할
+                    int maxIndex = 0;
+                    float maxScore = scores[0];
+
+                    for (int i = 1; i < scores.length; i++) {
+                        if (scores[i] > maxScore) {
+                            maxScore = scores[i];
+                            maxIndex = i;
+                        }
+                    }
+                    Log.i("TAG", "[Predict] Number:"+maxIndex+" Score:"+maxScore);
+                    List<String> foodList;
+                    foodList = getLabelData();
+                    Log.i("TAG", "[Predict]:"+foodList.get(maxIndex));
+                    Toast.makeText(getApplicationContext(), "[Predict]:"+ foodList.get(maxIndex), Toast.LENGTH_SHORT).show();
+
+
+
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        File photoFile = null;
+                        try { // 파일 쓰기를 할때는 항상 try catch 문을 적어야함!
+                            photoFile = createImageFile();
+                            Log.i(TAG, "EXception");
+                        } catch (IOException e) {
+                        }
+                        Log.i(TAG, "EXception");
+                        if (photoFile != null) {
+                            photoUri = FileProvider.getUriForFile(getApplicationContext(), getPackageName(), photoFile);
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                            startActivityResult.launch(intent); // 결과 실행
+                        }
+                    }
                 }
 
                 // 이미지 파일 만드는 함수
@@ -296,7 +318,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+    public List<String> getLabelData(){
+        List<String> foodList = new ArrayList<>();
+        try {
+            InputStream inputStream = getAssets().open("label_data.txt");
 
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                foodList.add(line);
+            }
+            reader.close();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return foodList;
+    }
 
     public static String assetFilePath(Context context, String assetName) throws IOException {
         File file = new File(context.getFilesDir(), assetName);
@@ -318,3 +357,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+
