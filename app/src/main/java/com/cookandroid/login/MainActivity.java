@@ -3,6 +3,7 @@ package com.cookandroid.login;
 import static android.content.ContentValues.TAG;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,7 +16,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -40,9 +40,22 @@ import com.google.firebase.auth.FirebaseUser;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.normal.TedPermission;
 
+import org.pytorch.Device;
+import org.pytorch.IValue;
+import org.pytorch.LiteModuleLoader;
+import org.pytorch.MemoryFormat;
+import org.pytorch.Module;
+import org.pytorch.Tensor;
+//import org.pytorch.TensorImageUtils;
+import org.pytorch.torchvision.TensorImageUtils;
+
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -145,35 +158,73 @@ public class MainActivity extends AppCompatActivity {
                     .setRationaleMessage("카메라 권한이 필요합니다.")
                     .setPermissions(android.Manifest.permission.CAMERA)
                     .check();
+            Log.i(TAG, "camera success!");
+
+
 
             // floatingActionButton 초기화
             floatingActionButton = findViewById(R.id.main_floating_add_btn);
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
-//                startActivity(intent);
-                    Log.i(TAG, "into camera");
                     // 카메라 권한 있는지 확인
                     // 권한이 다 있다면 카메라 띄우기
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    Log.i(TAG, "into camera2");
                     intent.putExtra("key", "value"); // 예시로 putExtra를 사용하여 데이터 추가
                     Log.i(TAG, "Intent contents: " + intent.resolveActivity(getPackageManager()));
-                    if (intent.resolveActivity(getPackageManager()) != null) {
-                        File photoFile = null;
-                        try { // 파일 쓰기를 할때는 항상 try catch 문을 적어야함!
-                            photoFile = createImageFile();
-                            Log.i(TAG, "EXception");
-                        } catch (IOException e) {
-                        }
-                        Log.i(TAG, "EXception");
-                        if (photoFile != null) {
-                            photoUri = FileProvider.getUriForFile(getApplicationContext(), getPackageName(), photoFile);
-                            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                            startActivityResult.launch(intent); // 결과 실행
-                        }
+                    final Context context = view.getContext(); // 버튼의 컨텍스트 얻기
+
+                    Bitmap bitmap = null;
+                    Module module = null;
+                    try {
+                        // creating bitmap from packaged into app android asset 'image.jpg',
+                        // app/src/main/assets/image.jpg
+                        bitmap = BitmapFactory.decodeStream(getAssets().open("image.jpg"));
+                        // loading serialized torchscript module from packaged into app android asset model.pt,
+                        // app/src/model/assets/model.pt
+                        Log.i(TAG, "image load!");
+//                        module = LiteModuleLoader.load("Efficient-Mobile2.ptl");
+//                        module = LiteModuleLoader.load(MainActivity.assetFilePath(getApplicationContext(), "Efficient-Mobile3.ptl"));
+                        String model_s = assetFilePath(MainActivity.this, "Efficient-Mobile3.ptl");
+                        Log.i(TAG, "model path"+model_s);
+                        module = LiteModuleLoader.load(model_s);
+//                        module = LiteModuleLoader.load("/Users/goodyoung/Desktop/GIt/Diabetes/Group_project/app/src/model/assets/Efficient-Mobile.ptl");
+                        Log.i(TAG, "model load!");
+                    } catch (IOException e) {
+                        Log.e("PytorchHelloWorld", "Error reading assets", e);
+                        finish();
                     }
+
+                    // showing image on UI
+                    ImageView imageView = findViewById(R.id.main_floating_add_btn);
+                    imageView.setImageBitmap(bitmap);
+
+                    // preparing input tensor
+                    final Tensor inputTensor = TensorImageUtils.bitmapToFloat32Tensor(bitmap,
+                            TensorImageUtils.TORCHVISION_NORM_MEAN_RGB, TensorImageUtils.TORCHVISION_NORM_STD_RGB, MemoryFormat.CHANNELS_LAST);
+                    Log.i(TAG, "image to tensor!");
+                    Log.i(TAG, "image to tensor!"+inputTensor);
+                    // running the model
+                    final Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
+                    Log.i(TAG, "model input success");
+                    // getting tensor content as java array of floats
+                    final float[] scores = outputTensor.getDataAsFloatArray();
+                    Log.i("TAG", Arrays.toString(scores));
+
+//                    if (intent.resolveActivity(getPackageManager()) != null) {
+//                        File photoFile = null;
+//                        try { // 파일 쓰기를 할때는 항상 try catch 문을 적어야함!
+//                            photoFile = createImageFile();
+//                            Log.i(TAG, "EXception");
+//                        } catch (IOException e) {
+//                        }
+//                        Log.i(TAG, "EXception");
+//                        if (photoFile != null) {
+//                            photoUri = FileProvider.getUriForFile(getApplicationContext(), getPackageName(), photoFile);
+//                            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+//                            startActivityResult.launch(intent); // 결과 실행
+//                        }
+//                    }
                 }
 
                 // 이미지 파일 만드는 함수
@@ -247,4 +298,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public static String assetFilePath(Context context, String assetName) throws IOException {
+        File file = new File(context.getFilesDir(), assetName);
+        if (file.exists() && file.length() > 0) {
+            Log.i(TAG, "model load success!!!");
+            return file.getAbsolutePath();
+        }
+        Log.i(TAG, "model load success!!!!");
+        try (InputStream is = context.getAssets().open(assetName)) {
+            try (OutputStream os = new FileOutputStream(file)) {
+                byte[] buffer = new byte[4 * 1024];
+                int read;
+                while ((read = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, read);
+                }
+                os.flush();
+            }
+            return file.getAbsolutePath();
+        }
+    }
 }
