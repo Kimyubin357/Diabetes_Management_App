@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -142,6 +143,52 @@ public class AlarmActivity extends AppCompatActivity {
 
             TextView drug = view.findViewById(R.id.drug_text);
             drug.setText(cursor.getString(cursor.getColumnIndexOrThrow(Databases.CreateDB.DRUGTEXT)));
+            Button btnEdit = view.findViewById(R.id.btnEdit);
+            Button btnDelete = view.findViewById(R.id.btnDelete);
+
+            final long id = cursor.getLong(cursor.getColumnIndexOrThrow(Databases.CreateDB._ID));
+
+            btnEdit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(AlarmActivity.this, ModifyAlarm.class);
+                    intent.putExtra("alarm_id", id);
+                    startActivity(intent);
+                }
+            });
+
+            btnDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // 삭제 버튼 클릭 시 동작 구현
+                    // 예: 삭제 확인 다이얼로그 표시 등
+                    AlertDialog.Builder builder = new AlertDialog.Builder(AlarmActivity.this);
+                    builder.setTitle("알림 삭제");
+                    builder.setMessage("알림을 삭제하시겠습니까?");
+                    builder.setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            SQLiteDatabase db = AlarmDbHelper.getInstance(AlarmActivity.this).getWritableDatabase();
+                            int deletedCount = db.delete(Databases.CreateDB.TABLE_NAME,
+                                    Databases.CreateDB._ID + "=" + id, null);
+
+                            cancelId = cursor.getString(cursor.getColumnIndexOrThrow(Databases.CreateDB.ALARMTIME));
+
+                            if (deletedCount == 0) {
+                                Toast.makeText(AlarmActivity.this, "알림 삭제 오류", Toast.LENGTH_SHORT).show();
+                            } else {
+                                mAdapter.swapCursor(getAlarmCursor());
+                                Toast.makeText(AlarmActivity.this, "알림을 삭제했습니다.", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(AlarmActivity.this, AlarmReceiver.class);
+                                PendingIntent cancelP = PendingIntent.getBroadcast(AlarmActivity.this, Integer.parseInt(cancelId), intent, PendingIntent.FLAG_MUTABLE);
+                                cancelP.cancel();
+                            }
+                        }
+                    });
+                    builder.setNegativeButton("취소", null);
+                    builder.show();
+                }
+            });
         }
     }
 }
