@@ -32,7 +32,7 @@ import java.util.Locale;
 
 public class FragFriend extends Fragment {
 
-    private EditText menu1EditText, menu2EditText;
+    private EditText menuEditText;
     private Spinner mealSpinner;
     private Button saveButton;
     private TextView menuDisplayTextView;
@@ -50,8 +50,7 @@ public class FragFriend extends Fragment {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         currentUser = mAuth.getCurrentUser();
 
-        menu1EditText = view.findViewById(R.id.menu1EditText);
-        menu2EditText = view.findViewById(R.id.menu2EditText);
+        menuEditText = view.findViewById(R.id.menuEditText);
         mealSpinner = view.findViewById(R.id.mealSpinner);
         saveButton = view.findViewById(R.id.saveButton);
         menuDisplayTextView = view.findViewById(R.id.menuDisplayTextView);
@@ -71,21 +70,21 @@ public class FragFriend extends Fragment {
 
     private void saveMenu() {
         String meal = mealSpinner.getSelectedItem().toString();
-        String menu1 = menu1EditText.getText().toString().trim();
-        String menu2 = menu2EditText.getText().toString().trim();
+        String menu = menuEditText.getText().toString().trim();
 
-        if (meal.isEmpty() || menu1.isEmpty() || menu2.isEmpty()) {
+        if (meal.isEmpty() || menu.isEmpty()) {
             Toast.makeText(getActivity(), "메뉴와 식사 시간을 모두 입력하세요.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         String userId = currentUser.getUid();
-        DatabaseReference userRef = mDatabase.child("meals").child(userId);
 
-        MenuData menuData = new MenuData(menu1, menu2);
+        // 현재 날짜 가져오기
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
-        // 해당 사용자 ID 아래에 메뉴 데이터 저장
-        userRef.child(meal).setValue(menuData)
+        // 해당 사용자 ID 아래에 아침/점심/저녁 메뉴 데이터 저장
+        DatabaseReference userRef = mDatabase.child("meals").child(userId).child(currentDate).child(meal);
+        userRef.setValue(menu)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -99,33 +98,6 @@ public class FragFriend extends Fragment {
                     }
                 });
     }
-    public class MenuData {
-        private String menu1;
-        private String menu2;
-        private Object timestamp; // 날짜 정보를 저장하기 위한 필드
-
-        public MenuData() {
-            // Default constructor required for calls to DataSnapshot.getValue(MenuData.class)
-        }
-
-        public MenuData(String menu1, String menu2) {
-            this.menu1 = menu1;
-            this.menu2 = menu2;
-            this.timestamp = ServerValue.TIMESTAMP; // 현재 시간을 서버에서 가져옴
-        }
-
-        public String getMenu1() {
-            return menu1;
-        }
-
-        public String getMenu2() {
-            return menu2;
-        }
-
-        public Object getTimestamp() {
-            return timestamp;
-        }
-    }
 
     private void displayMenu() {
         String userId = currentUser.getUid();
@@ -136,18 +108,16 @@ public class FragFriend extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 StringBuilder menuDisplay = new StringBuilder();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                for (DataSnapshot mealSnapshot : dataSnapshot.getChildren()) {
-                    String meal = mealSnapshot.getKey();
-                    MenuData menuData = mealSnapshot.getValue(MenuData.class);
-                    if (menuData != null) {
-                        String menu1 = menuData.getMenu1();
-                        String menu2 = menuData.getMenu2();
-                        Object timestamp = menuData.getTimestamp();
-                        String dateString = timestamp != null ? sdf.format(new Date((Long) timestamp)) : "";
-                        menuDisplay.append("Meal: ").append(meal).append("\n");
-                        menuDisplay.append("Menu 1: ").append(menu1).append("\n");
-                        menuDisplay.append("Menu 2: ").append(menu2).append("\n");
-                        menuDisplay.append("Date: ").append(dateString).append("\n\n");
+                for (DataSnapshot dateSnapshot : dataSnapshot.getChildren()) {
+                    String date = dateSnapshot.getKey();
+                    for (DataSnapshot mealSnapshot : dateSnapshot.getChildren()) {
+                        String meal = mealSnapshot.getKey();
+                        String menu = (String) mealSnapshot.getValue(); // ERROR1
+                        if (menu != null) {
+                            menuDisplay.append("Date: ").append(date).append("\n");
+                            menuDisplay.append("Meal: ").append(meal).append("\n");
+                            menuDisplay.append("Menu: ").append(menu).append("\n\n");
+                        }
                     }
                 }
                 menuDisplayTextView.setText(menuDisplay.toString());
@@ -160,4 +130,3 @@ public class FragFriend extends Fragment {
         });
     }
 }
-

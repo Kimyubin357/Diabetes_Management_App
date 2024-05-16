@@ -1,20 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- frag_friend.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <EditText
-        android:id="@+id/menu1EditText"
+        android:id="@+id/menuEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="첫 번째 메뉴 입력" />
-
-    <EditText
-        android:id="@+id/menu2EditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="두 번째 메뉴 입력" />
+        android:hint="메뉴를 입력하세요" />
 
     <Spinner
         android:id="@+id/mealSpinner"
