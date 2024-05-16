@@ -71,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
     //바텀 네비게이션
     BottomNavigationView bottomNavigationView;
 
-
-
     private FloatingActionButton floatingActionButton;
 
     private String Tag = "메인";
@@ -102,7 +100,9 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            finish();
         } else {
 
             //프래그먼트 생성
