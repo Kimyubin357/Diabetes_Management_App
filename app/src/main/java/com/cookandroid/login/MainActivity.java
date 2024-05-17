@@ -3,9 +3,13 @@ package com.cookandroid.login;
 import static android.app.ProgressDialog.show;
 import static android.content.ContentValues.TAG;
 
+import static java.security.AccessController.getContext;
+
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -27,6 +31,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
@@ -53,6 +59,7 @@ import org.pytorch.Tensor;
 import org.pytorch.torchvision.TensorImageUtils;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -76,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
     private String Tag = "메인";
 
     private static final int REQUEST_IMAGE_CAPTURE = 672;
+    private static final int WRITE_EXTERNAL_STORAGE_REQUEST = 123; // 원하는 숫자로 설정 가능
+
     private String imageFilePath;
     private Uri photoUri;
 
@@ -158,51 +167,25 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
 
-            // 권한 창 생성
-            TedPermission.create()
-                    .setPermissionListener(permissionListner)
-                    .setDeniedMessage("거부하셨습니다.")
-                    .setRationaleMessage("카메라 권한이 필요합니다.")
-                    .setPermissions(android.Manifest.permission.CAMERA)
-                    .check();
-            Log.i(TAG, "camera success!");
-
-
-
             // floatingActionButton 초기화
             floatingActionButton = findViewById(R.id.main_floating_add_btn);
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // 권한 창 생성
+                    TedPermission.create()
+                            .setPermissionListener(permissionListner)
+                            .setDeniedMessage("거부하셨습니다.")
+                            .setRationaleMessage("카메라 권한이 필요합니다.")
+                            .setPermissions(android.Manifest.permission.CAMERA)
+                            .check();
+                    Log.i(TAG, "camera success!");
 
                     // 카메라 권한 있는지 확인
                     // 권한이 다 있다면 카메라 띄우기
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     intent.putExtra("key", "value"); // 예시로 putExtra를 사용하여 데이터 추가
                     Log.i(TAG, "Intent contents: " + intent.resolveActivity(getPackageManager()));
-
-                    // Load and prepare the model
-
-                    Bitmap bitmap = loadBitmap("image.jpg");
-                    if (bitmap == null) {
-                        return;
-                    }
-                    bitmap = resizeImage(bitmap,480,480);
-                    // 비트맵의 크기를 로그로 출력
-
-                    Module module = loadModel("Efficient-Mobile3.ptl");
-                    if (module == null) {
-                        return;
-                    }
-
-                    // Display image on UI
-                    ImageView imageView = findViewById(R.id.main_floating_add_btn);
-                    imageView.setImageBitmap(bitmap);
-
-                    // image -> tensor
-                    Tensor inputTensor = prepareInputTensor(bitmap);
-                    // model predict
-                    predict(module, inputTensor);
 
                     // camera start !!
                     if (intent.resolveActivity(getPackageManager()) != null) {
@@ -214,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         Log.i(TAG, "EXception");
                         if (photoFile != null) {
+                            Log.i(TAG,"photo");
                             photoUri = FileProvider.getUriForFile(getApplicationContext(), getPackageName(), photoFile);
                             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                             startActivityResult.launch(intent); // 결과 실행
@@ -233,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
                             storageDir
                     );
                     imageFilePath = image.getAbsolutePath();
+                    Log.i(Tag,imageFilePath);
                     return image;
                 }
 
@@ -244,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onActivityResult(ActivityResult result) {
                                 //원하는 기능 작성
                                 if (result.getResultCode() == Activity.RESULT_OK) {
+                                    Log.i(TAG,"check");
                                     Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
 
                                     ExifInterface exif = null;
@@ -263,9 +249,30 @@ public class MainActivity extends AppCompatActivity {
                                     } else {
                                         exifDegree = 0;
                                     }
-                                    // 이미지 캡쳐 결과 뜨게 하기
-                                    // 이미지 뜨는 창이나 그런 곳에 나타나게 해야할 듯
-                                    ((ImageView) findViewById(R.id.imgview)).setImageBitmap(rotate(bitmap, exifDegree));
+                                    // 이미지 캡쳐 결과 뜬다
+                                    // 이미지 갤러리에 저장할 필요가 있다.
+
+                                    // Load and prepare the model
+                                    Bitmap bitmap2 = loadBitmap("image.jpg");
+                                    if (bitmap2 == null) {return;}
+                                    bitmap2 = resizeImage(bitmap2,480,480);
+                                    // 비트맵의 크기를 로그로 출력
+                                    Module module = loadModel("Efficient-Mobile3.ptl");
+                                    if (module == null) {return;}
+                                    // Display image on UI
+                                    ImageView imageView = findViewById(R.id.main_floating_add_btn);
+                                    imageView.setImageBitmap(bitmap2);
+                                    // image -> tensor
+                                    Tensor inputTensor = prepareInputTensor(bitmap2);
+                                    // model predict
+                                    predict(module, inputTensor);
+
+                                    // display image
+                                    ((ImageView) findViewById(R.id.imgview)).setImageBitmap(rotate(bitmap2, exifDegree));
+                                }
+                                else{
+                                    Log.i(TAG,"not check");
+                                    Toast.makeText(getApplicationContext(), "Not Save Picture", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -352,6 +359,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("TAG", "[Predict]: " + foodList.get(maxIndex));
                     Toast.makeText(getApplicationContext(), "[Predict]: " + foodList.get(maxIndex), Toast.LENGTH_SHORT).show();
                 }
+                /// image predict to db
+
 
 
             });
