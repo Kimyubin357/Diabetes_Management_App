@@ -1,155 +1,132 @@
 package com.cookandroid.login.Fragment;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
-import android.app.DatePickerDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-// import androidx.appcompat.app.AlertDialog; +h_1 // +g_2
 
 import com.cookandroid.login.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 
-import androidx.fragment.app.FragmentManager; //
-import androidx.fragment.app.FragmentTransaction; //
-
-import android.widget.Button; // +a_1
-// import android.widget.EditText; +e_1 // +a_2
-import android.widget.EditText;
-import android.widget.NumberPicker; // +a_3
-import android.widget.Toast; // +a_4
-//import android.widget.DatePickerDialog; +d_3 // +b_1
-// import android.widget.RadioGroup; +e_2 // +b_2
-// import android.widget.RadioButton; +e_3 // +b_3
-
-import android.widget.TextView; // +c_1
-
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class FragFriend extends Fragment {
-    private TextView textViewDateLabel1, textViewDateLabel2; // +d_1
-    private Button buttonSelectDate, buttonChoose, buttonSave, buttonCancel; // +d_2 //
-    private DatePickerDialog datePickerDialog; // +b_1
-    //    private RadioGroup radioGroupMealTime; +e_4 // +b_2
-//    private TimePickerDialog timePickerDialog;
-    private NumberPicker numberPicker;
-    private Calendar calendar;
-    private EditText editTextNote;
 
-    private final String[] timeOptions = {
-            " 공복 ", " 아침 식전 ", " 아침 식후 ", " 점심 식전 ", " 점심 식후 ", " 저녁 식전 ", " 저녁 식후 ", " 자기 전 "
-    };
+    private EditText menuEditText;
+    private Spinner mealSpinner;
+    private Button saveButton;
+    private TextView menuDisplayTextView;
+
+    private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
+    private FirebaseUser currentUser;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // 레이아웃 파일을 인플레이트합니다.
         View view = inflater.inflate(R.layout.frag_friend, container, false);
 
-        // UI 컴포넌트를 초기화합니다.
-        textViewDateLabel1 = view.findViewById(R.id.textViewDateLabel1);
-        textViewDateLabel2 = view.findViewById(R.id.textViewDateLabel2);
-        buttonSelectDate = view.findViewById(R.id.buttonSelectDate);
-        buttonChoose = view.findViewById(R.id.buttonChoose);
-        buttonSave = view.findViewById(R.id.buttonSave);
-//        radioGroupMealTime = view.findViewById(R.id.radioGroupMealTime); +e_5
-//      buttonCancel = view.findViewById(R.id.buttonCancel);
-        numberPicker = view.findViewById(R.id.numberPicker);
-        editTextNote = view.findViewById(R.id.editTextNote);
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        currentUser = mAuth.getCurrentUser();
 
-        // 달력 인스턴스를 초기화하고, NumberPicker를 설정합니다.
-        calendar = Calendar.getInstance();
-        numberPicker.setMinValue(1);
-        numberPicker.setMaxValue(999); // (del)예시: 혈당 최대값 설정
-        numberPicker.setValue(100); // (del)예시: 초기값 설정
+        menuEditText = view.findViewById(R.id.menuEditText);
+        mealSpinner = view.findViewById(R.id.mealSpinner);
+        saveButton = view.findViewById(R.id.saveButton);
+        menuDisplayTextView = view.findViewById(R.id.menuDisplayTextView);
 
-        // 초기 날짜를 레이블에 설정합니다.
-        updateDateLabel();
-        updateTimeLabel();
-
-        // 날짜 선택 다이얼로그를 설정합니다.
-        buttonSelectDate.setOnClickListener(v -> {
-            datePickerDialog = new DatePickerDialog(getActivity(), (view1, year, monthOfYear, dayOfMonth) -> {
-
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH, monthOfYear);
-                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                updateDateLabel(); // 날짜 레이블 업데이트 +e_0
-            },
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH));
-
-            datePickerDialog.show(); // 다이얼로그를 화면에 표시 +e_0
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveMenu();
+            }
         });
 
-        // 시간 선택 버튼 이벤트를 처리합니다.
-        buttonChoose.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//            RadioButton selectedMealTimeButton = view.findViewById(radioGroupMealTime.getCheckedRadioButtonId()); +e_6 // +b_3정도
-//            String mealTime = selectedMealTimeButton.getText().toString(); +e_7
-//            timePickerDialog = new TimePickerDialog(getActivity(), (view1, hourOfDay, minute) -> {
-//              calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-//                calendar.set(Calendar.MINUTE, minute);
-//                updateTimeLabel();
-            //*******시간 선택 로직 추가
-            //*******예: 시간 선택 다이얼로그 표시
-//                    calendar.get(Calendar.HOUR_OF_DAY),
-//                    calendar.get(Calendar.MINUTE),
-//                    true);
-
-//            timePickerDialog.show();
-            builder.setTitle("시간 선택");
-            builder.setItems(timeOptions, (dialog, which) -> {
-                textViewDateLabel2.setText("지금은"+timeOptions[which]);
-            });
-            builder.show();
-        });
-
-        // 저장 버튼 클릭 이벤트를 처리합니다.
-        buttonSave.setOnClickListener(v -> {
-            String date = textViewDateLabel1.getText().toString();
-            String time = textViewDateLabel2.getText().toString();
-            int number = numberPicker.getValue();
-            String note = editTextNote.getText().toString(); // 메모장 내용 가져오기
-
-            String message = String.format("날짜: %s, 시간: %s, 혈당 측정값: %d, 메모: %s", date, time, number, note);
-            Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-        });
-
-/*      buttonCancel.setOnClickListener(v -> {
-            // FragHome으로 이동
-            FragmentManager fragmentManager = getParentFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, new FragHome()); // R.id.fragment_container는 실제 프래그먼트 컨테이너 ID로 대체해야 함
-            fragmentTransaction.addToBackStack(null); // 필요하다면 백스택에 추가해야 함
-            fragmentTransaction.commit();
-        });
-*/
+        // 사용자가 저장한 메뉴 출력
+        displayMenu();
 
         return view;
     }
 
-    // 날짜 레이블을 업데이트하는 메서드입니다.
-    private void updateDateLabel() {
-        String formattedDate = String.format(
-                "%d년 %02d월 %02d일",
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH)+1, //Java에서 1월은 0으로 시작!
-                calendar.get(Calendar.DAY_OF_MONTH));
-        textViewDateLabel1.setText("오늘은 " + formattedDate);
+    private void saveMenu() {
+        String meal = mealSpinner.getSelectedItem().toString();
+        String menu = menuEditText.getText().toString().trim();
+
+        if (meal.isEmpty() || menu.isEmpty()) {
+            Toast.makeText(getActivity(), "메뉴와 식사 시간을 모두 입력하세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = currentUser.getUid();
+
+        // 현재 날짜 가져오기
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+        // 해당 사용자 ID 아래에 아침/점심/저녁 메뉴 데이터 저장
+        DatabaseReference userRef = mDatabase.child("meals").child(userId).child(currentDate).child(meal);
+        userRef.setValue(menu)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getActivity(), "메뉴가 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                            // 저장 후 다시 출력
+                            displayMenu();
+                        } else {
+                            Toast.makeText(getActivity(), "메뉴를 저장하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
-    private void updateTimeLabel() {
-        String formattedTime = String.format(
-                "%02d시 %02d분",
-                calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE));
-        textViewDateLabel2.setText("지금은 " + formattedTime);
+    private void displayMenu() {
+        String userId = currentUser.getUid();
+        DatabaseReference userRef = mDatabase.child("meals").child(userId);
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                StringBuilder menuDisplay = new StringBuilder();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                for (DataSnapshot dateSnapshot : dataSnapshot.getChildren()) {
+                    String date = dateSnapshot.getKey();
+                    for (DataSnapshot mealSnapshot : dateSnapshot.getChildren()) {
+                        String meal = mealSnapshot.getKey();
+                        String menu = (String) mealSnapshot.getValue(); // ERROR1
+                        if (menu != null) {
+                            menuDisplay.append("Date: ").append(date).append("\n");
+                            menuDisplay.append("Meal: ").append(meal).append("\n");
+                            menuDisplay.append("Menu: ").append(menu).append("\n\n");
+                        }
+                    }
+                }
+                menuDisplayTextView.setText(menuDisplay.toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getActivity(), "메뉴를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
