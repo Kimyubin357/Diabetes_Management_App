@@ -41,4 +41,6 @@ dependencies {
     implementation ("androidx.cardview:cardview:1.0.0")
     implementation ("com.android.volley:volley:1.2.0")
     implementation("io.github.ParkSangGwon:tedpermission-normal:3.3.0")
+    implementation ("org.pytorch:pytorch_android_lite:1.13.1")
+    implementation ("org.pytorch:pytorch_android_torchvision:1.9.0")
 }

@@ -27,7 +27,12 @@ public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabaseRef;
-    private EditText mEt_Email, mEt_pwd, mEt_name, mEt_birthDate, mEt_weight, mEt_height;
+    private EditText mEt_Email;
+    private EditText mEt_pwd;
+    private EditText mEt_name;
+    private EditText mEt_birthDate;
+    private EditText mEt_weight;
+    private EditText mEt_height;
     private Button mEt_join, mEt_male, mEt_female;
     private String gender = "";
 
@@ -112,8 +117,8 @@ public class RegisterActivity extends AppCompatActivity {
                 String str_email = mEt_Email.getText().toString();
                 String str_pwd = mEt_pwd.getText().toString();
 
-                String str_height = mEt_height.getText().toString();//키 String 가지고 오기
-                String str_weight = mEt_weight.getText().toString();//몸무게 String 가지고 오기
+                String str_weight = mEt_weight.getText().toString();
+                String str_height = mEt_height.getText().toString();
 
                 if (str_email.length()==0 || str_pwd.length()==0 || gender.length()==0 || str_name.length()==0 || str_birthDate.length()==0 || str_height.length()==0 || str_weight.length()==0){
                     Toast.makeText(RegisterActivity.this,"회원가입 실패",Toast.LENGTH_SHORT).show();
@@ -125,14 +130,14 @@ public class RegisterActivity extends AppCompatActivity {
                             if (task.isSuccessful()){
                                 FirebaseUser firebaseUser = mAuth.getCurrentUser();
                                 UserAccount account = new UserAccount();
-                                account.setIdToken(firebaseUser.getUid());
+
                                 account.setName(str_name);
                                 account.setBirthDate(str_birthDate);
                                 account.setHeight(str_height);
                                 account.setWeight(str_weight);
                                 account.setGender(gender);
 
-                                mDatabaseRef.child("UserAccount").child(firebaseUser.getUid()).setValue(account);
+                                mDatabaseRef.child("UserAccount").child(firebaseUser.getUid()).child("UserInformation").setValue(account);
 
                                 Toast.makeText(RegisterActivity.this,"회원가입 성공",Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
