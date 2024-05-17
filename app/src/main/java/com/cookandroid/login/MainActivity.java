@@ -265,8 +265,12 @@ public class MainActivity extends AppCompatActivity {
                                     // image -> tensor
                                     Tensor inputTensor = prepareInputTensor(bitmap2);
                                     // model predict
-                                    predict(module, inputTensor);
-
+                                    String foodName = predict(module, inputTensor);
+                                    Log.i(TAG,"[predict]: "+foodName);
+                                    // 동현님 이 밑으로 DB Save Logic 만드시면 될 것 같습니다.
+                                            // bitmap2 변수가 이미지를 나타내는 변수이고
+                                            // foodName이 모델이 예측한 음식 이름 입니다!
+                                    // 그리고 display image도 새로운 프래그먼트로 이동하는 것으로 변경하면 될 것 같스비낟.
                                     // display image
                                     ((ImageView) findViewById(R.id.imgview)).setImageBitmap(rotate(bitmap2, exifDegree));
                                 }
@@ -333,7 +337,7 @@ public class MainActivity extends AppCompatActivity {
                     );
                 }
 
-                private void predict(Module module, Tensor inputTensor) {
+                private String predict(Module module, Tensor inputTensor) {
                     // Perform inference
                     Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
                     Log.i(TAG, "Model input success");
@@ -358,6 +362,7 @@ public class MainActivity extends AppCompatActivity {
                     List<String> foodList = getLabelData();
                     Log.i("TAG", "[Predict]: " + foodList.get(maxIndex));
                     Toast.makeText(getApplicationContext(), "[Predict]: " + foodList.get(maxIndex), Toast.LENGTH_SHORT).show();
+                    return foodList.get(maxIndex);
                 }
                 /// image predict to db
 
