@@ -181,55 +181,38 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("key", "value"); // 예시로 putExtra를 사용하여 데이터 추가
                     Log.i(TAG, "Intent contents: " + intent.resolveActivity(getPackageManager()));
 
-                    Bitmap bitmap = null;
-                    Module module = null;
-                    try {
-                        bitmap = BitmapFactory.decodeStream(getAssets().open("image5.jpg"));
-                        Log.i(TAG, "image load!");
-                        String model_s = assetFilePath(MainActivity.this, "Efficient-Mobile3.ptl");
+                    // Load and prepare the model
 
-                        Log.i(TAG, "model path"+model_s);
-                        module = LiteModuleLoader.load(model_s);
+                    Bitmap bitmap = loadBitmap("image.jpg");
+                    if (bitmap == null) {
+                        return;
+                    }
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+                    Log.i(TAG, "image load width: " + width + ", height: " + height);
+                    bitmap = resizeImage(bitmap,480,480);
+                    // 비트맵의 크기를 로그로 출력
 
-                        Log.i(TAG, "model load!");
-                    } catch (IOException e) {
-                        Log.e("PytorchHelloWorld", "Error reading assets", e);
-                        finish();
+                    width = bitmap.getWidth();
+                    height = bitmap.getHeight();
+                    Log.i(TAG, "Resized image width: " + width + ", height: " + height);
+
+                    Module module = loadModel("Efficient-Mobile3.ptl");
+                    if (module == null) {
+                        return;
                     }
 
-                    // showing image on UI
+                    // Display image on UI
                     ImageView imageView = findViewById(R.id.main_floating_add_btn);
                     imageView.setImageBitmap(bitmap);
 
-                    // preparing input tensor
-                    final Tensor inputTensor = TensorImageUtils.bitmapToFloat32Tensor(bitmap,
-                            TensorImageUtils.TORCHVISION_NORM_MEAN_RGB, TensorImageUtils.TORCHVISION_NORM_STD_RGB, MemoryFormat.CHANNELS_LAST);
-                    Log.i(TAG, "image to tensor!"+inputTensor);
+                    // image -> tensor
+                    Tensor inputTensor = prepareInputTensor(bitmap);
+                    // model predict
+                    predict(module, inputTensor);
 
-                    // inference model
-                    final Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
-                    Log.i(TAG, "model input success");
 
-                    // tensor to java array
-                    final float[] scores = outputTensor.getDataAsFloatArray();
-                    Log.i("TAG", Arrays.toString(scores));
-
-                    Log.i("TAG", "scores length: "+scores.length);
-                    // armax 역할
-                    int maxIndex = 0;
-                    float maxScore = scores[0];
-
-                    for (int i = 1; i < scores.length; i++) {
-                        if (scores[i] > maxScore) {
-                            maxScore = scores[i];
-                            maxIndex = i;
-                        }
-                    }
-                    Log.i("TAG", "[Predict] Number:"+maxIndex+" Score:"+maxScore);
-                    List<String> foodList;
-                    foodList = getLabelData();
-                    Log.i("TAG", "[Predict]:"+foodList.get(maxIndex));
-                    Toast.makeText(getApplicationContext(), "[Predict]:"+ foodList.get(maxIndex), Toast.LENGTH_SHORT).show();
+                    // camera start !!
 
 
 
@@ -247,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivityResult.launch(intent); // 결과 실행
                         }
                     }
+
                 }
 
                 // 이미지 파일 만드는 함수
@@ -272,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
                                 //원하는 기능 작성
                                 if (result.getResultCode() == Activity.RESULT_OK) {
                                     Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
+
                                     ExifInterface exif = null;
 
                                     try {
@@ -295,6 +280,10 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         });
+                private Bitmap resizeImage(Bitmap bitmap, int imageWidth, int imageHeight){
+                    Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, imageWidth, imageHeight, true);
+                    return resizedBitmap;
+                }
 
                 // 그 외 처리에 필요한 함수들
                 private int exifOrientationToDegress(int exifOrientation) {
@@ -313,6 +302,69 @@ public class MainActivity extends AppCompatActivity {
                     matrix.postRotate(exifDegree);
                     return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 }
+                private Bitmap loadBitmap(String fileName) {
+                    try {
+                        Bitmap bitmap = BitmapFactory.decodeStream(getAssets().open(fileName));
+                        Log.i(TAG, "Image loaded!");
+                        return bitmap;
+                    } catch (IOException e) {
+                        Log.e("PytorchHelloWorld", "Error reading assets", e);
+                        finish();
+                        return null;
+                    }
+                }
+
+                private Module loadModel(String modelPath) {
+                    try {
+                        String modelFilePath = assetFilePath(MainActivity.this, modelPath);
+                        Log.i(TAG, "Model path: " + modelFilePath);
+                        Module module = LiteModuleLoader.load(modelFilePath);
+                        Log.i(TAG, "Model loaded!");
+                        return module;
+                    } catch (IOException e) {
+                        Log.e("PytorchHelloWorld", "Error loading model", e);
+                        finish();
+                        return null;
+                    }
+                }
+
+                private Tensor prepareInputTensor(Bitmap bitmap) {
+                    return TensorImageUtils.bitmapToFloat32Tensor(
+                            bitmap,
+                            TensorImageUtils.TORCHVISION_NORM_MEAN_RGB,
+                            TensorImageUtils.TORCHVISION_NORM_STD_RGB,
+                            MemoryFormat.CHANNELS_LAST
+                    );
+                }
+
+                private void predict(Module module, Tensor inputTensor) {
+                    // Perform inference
+                    Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
+                    Log.i(TAG, "Model input success");
+
+                    // Convert tensor to Java array
+                    float[] scores = outputTensor.getDataAsFloatArray();
+                    Log.i("TAG", Arrays.toString(scores));
+                    Log.i("TAG", "Scores length: " + scores.length);
+
+                    // Find the index with the highest score
+                    int maxIndex = 0;
+                    float maxScore = scores[0];
+                    for (int i = 1; i < scores.length; i++) {
+                        if (scores[i] > maxScore) {
+                            maxScore = scores[i];
+                            maxIndex = i;
+                        }
+                    }
+                    Log.i("TAG", "[Predict] Number: " + maxIndex + " Score: " + maxScore);
+
+                    // Get label data and show the prediction result
+                    List<String> foodList = getLabelData();
+                    Log.i("TAG", "[Predict]: " + foodList.get(maxIndex));
+                    Toast.makeText(getApplicationContext(), "[Predict]: " + foodList.get(maxIndex), Toast.LENGTH_SHORT).show();
+                }
+
+
             });
 
         }
