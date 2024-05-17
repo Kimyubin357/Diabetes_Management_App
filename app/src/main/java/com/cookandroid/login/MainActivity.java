@@ -187,15 +187,8 @@ public class MainActivity extends AppCompatActivity {
                     if (bitmap == null) {
                         return;
                     }
-                    int width = bitmap.getWidth();
-                    int height = bitmap.getHeight();
-                    Log.i(TAG, "image load width: " + width + ", height: " + height);
                     bitmap = resizeImage(bitmap,480,480);
                     // 비트맵의 크기를 로그로 출력
-
-                    width = bitmap.getWidth();
-                    height = bitmap.getHeight();
-                    Log.i(TAG, "Resized image width: " + width + ", height: " + height);
 
                     Module module = loadModel("Efficient-Mobile3.ptl");
                     if (module == null) {
@@ -211,11 +204,7 @@ public class MainActivity extends AppCompatActivity {
                     // model predict
                     predict(module, inputTensor);
 
-
                     // camera start !!
-
-
-
                     if (intent.resolveActivity(getPackageManager()) != null) {
                         File photoFile = null;
                         try { // 파일 쓰기를 할때는 항상 try catch 문을 적어야함!
