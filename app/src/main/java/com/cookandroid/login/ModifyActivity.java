@@ -9,6 +9,7 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -206,14 +207,23 @@ public class ModifyActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        mAuth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        String userid = mAuth.getCurrentUser().getUid();//user의 Id를 string에 저장
+                        Log.i("Tag","First"+ userid);
+                        mAuth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {//auth에 현재 사용자를 삭제
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                mDatabaseRef.child("UserAccount").child(firebaseUser.getUid()).child("UserInformation").removeValue();
-                                Toast.makeText(ModifyActivity.this,"정상적으로 탈퇴되었습니다.",Toast.LENGTH_SHORT).show();
+                                mDatabaseRef.removeValue().addOnCompleteListener(tasks-> {
+                                           if (tasks.isSuccessful()){
+                                               Log.i("tag", "Success");
+                                               //user Id
+                                               Toast.makeText(ModifyActivity.this,"정상적으로 탈퇴되었습니다.",Toast.LENGTH_SHORT).show();
 
-                                Intent intent = new Intent(ModifyActivity.this,MainActivity.class);
-                                startActivity(intent);
+                                               Intent intent = new Intent(ModifyActivity.this,MainActivity.class);
+                                               startActivity(intent);
+                                           }else{
+                                               Log.i("tag", "Fail");
+                                           }
+                                        });
                             }
                         });
 

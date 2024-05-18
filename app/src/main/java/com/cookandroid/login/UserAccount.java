@@ -1,6 +1,6 @@
 package com.cookandroid.login;
 
-public class UserAccount{
+public class UserAccount{// 디비에 올릴 변수 리스트
     private String name; // 이름
     private String birthDate;
     private String weight;
@@ -8,7 +8,7 @@ public class UserAccount{
     private String gender;
 
 
-    public UserAccount(){
+    public UserAccount(){//memo로 바꾸시고 빈칸으로
     }
 
     public UserAccount(String name, String birthDate,String height, String weight, String gender){
@@ -16,7 +16,7 @@ public class UserAccount{
         this.birthDate = birthDate;
         this.height = height;
         this.weight = weight;
-        this.gender = gender;
+        this.gender = gender;//디비에 올라갈 구조
     }
 
 
