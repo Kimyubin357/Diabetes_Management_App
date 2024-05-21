@@ -23,7 +23,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
@@ -79,11 +78,11 @@ public class FragFriend extends Fragment {
 
         String userId = currentUser.getUid();
 
-        // 현재 날짜 가져오기
-        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        // 현재 날짜와 시간 가져오기
+        String currentDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
 
         // 해당 사용자 ID 아래에 아침/점심/저녁 메뉴 데이터 저장
-        DatabaseReference userRef = mDatabase.child("meals").child(userId).child(currentDate).child(meal);
+        DatabaseReference userRef = mDatabase.child("meals").child(userId).child(currentDateTime).child(meal);
         userRef.setValue(menu)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -107,14 +106,13 @@ public class FragFriend extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 StringBuilder menuDisplay = new StringBuilder();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                 for (DataSnapshot dateSnapshot : dataSnapshot.getChildren()) {
-                    String date = dateSnapshot.getKey();
+                    String dateTime = dateSnapshot.getKey();
                     for (DataSnapshot mealSnapshot : dateSnapshot.getChildren()) {
                         String meal = mealSnapshot.getKey();
                         String menu = (String) mealSnapshot.getValue(); // ERROR1
                         if (menu != null) {
-                            menuDisplay.append("Date: ").append(date).append("\n");
+                            menuDisplay.append("Date and Time: ").append(dateTime).append("\n");
                             menuDisplay.append("Meal: ").append(meal).append("\n");
                             menuDisplay.append("Menu: ").append(menu).append("\n\n");
                         }
