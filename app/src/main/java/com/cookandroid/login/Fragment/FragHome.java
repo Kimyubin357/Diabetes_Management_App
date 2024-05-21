@@ -15,12 +15,20 @@ import androidx.fragment.app.Fragment;
 import com.cookandroid.login.AlarmActivity;
 import com.cookandroid.login.MainActivity;
 import com.cookandroid.login.R;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+
+import java.util.ArrayList;
 
 public class FragHome extends Fragment {
     private View view;
     private Button buttonAlarm;
 
     private String TAG = "프래그먼트";
+    LineChart lineChart;
 
     @Nullable
     @Override
@@ -40,6 +48,23 @@ public class FragHome extends Fragment {
             }
         });
 
+        lineChart = view.findViewById(R.id.day_time_chart); // 초기화
+        LineDataSet lineDataSet1 = new LineDataSet(data1(), "Data Set1"); // dataset 만들기
+        ArrayList<ILineDataSet> dataSets = new ArrayList<>(); // 데이터셋 추가
+        dataSets.add(lineDataSet1);
+        LineData data = new LineData(dataSets); // 라인 데이터에 리스트 추가
+        lineChart.setData(data); // 차트에 라인 데이터 추가
+        lineChart.invalidate(); // 차트 초기화
         return view;
+    }
+    // 데이터 생성
+    private ArrayList<Entry> data1(){
+        ArrayList<Entry> dataList = new ArrayList<>();
+        dataList.add(new Entry(0,10));
+        dataList.add(new Entry(0,10));
+        dataList.add(new Entry(1,20));
+        dataList.add(new Entry(2,30));
+        dataList.add(new Entry(3,40));
+        return dataList;
     }
 }
