@@ -14,9 +14,13 @@ import androidx.fragment.app.Fragment;
 // import androidx.appcompat.app.AlertDialog; +h_1 // +g_2
 
 import com.cookandroid.login.R;
-
-import androidx.fragment.app.FragmentManager; //
-import androidx.fragment.app.FragmentTransaction; //
+import com.cookandroid.login.UserMemo;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import android.widget.Button; // +a_1
 // import android.widget.EditText; +e_1 // +a_2
@@ -32,6 +36,10 @@ import android.widget.TextView; // +c_1
 import java.util.Calendar;
 
 public class FragStar extends Fragment {
+    private static final String TAG = "MemoSave";
+
+    private FirebaseAuth mAuth;
+    private DatabaseReference mDatabaseRef;
     private TextView textViewDateLabel1, textViewDateLabel2; // +d_1
     private Button et_Date, et_Time, btn_Save, buttonCancel; // +d_2 //
     private DatePickerDialog datePickerDialog; // +b_1
@@ -51,14 +59,15 @@ public class FragStar extends Fragment {
         // 레이아웃 파일을 인플레이트합니다.
         View view = inflater.inflate(R.layout.frag_star, container, false);
 
+        mAuth = FirebaseAuth.getInstance();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+
         // UI 컴포넌트를 초기화합니다.
         textViewDateLabel1 = view.findViewById(R.id.textViewDateLabel1);
         textViewDateLabel2 = view.findViewById(R.id.textViewDateLabel2);
         et_Date = view.findViewById(R.id.et_Date);
         et_Time = view.findViewById(R.id.et_Time);
         btn_Save = view.findViewById(R.id.btn_Save);
-//      radioGroupMealTime = view.findViewById(R.id.radioGroupMealTime); +e_5
-//      buttonCancel = view.findViewById(R.id.buttonCancel);
         et_BloodSugar = view.findViewById(R.id.et_BloodSugar);
         et_Memo = view.findViewById(R.id.et_Memo);
 
@@ -91,19 +100,6 @@ public class FragStar extends Fragment {
         // 시간 선택 버튼 이벤트를 처리합니다.
         et_Time.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//            RadioButton selectedMealTimeButton = view.findViewById(radioGroupMealTime.getCheckedRadioButtonId()); +e_6 // +b_3정도
-//            String mealTime = selectedMealTimeButton.getText().toString(); +e_7
-//            timePickerDialog = new TimePickerDialog(getActivity(), (view1, hourOfDay, minute) -> {
-//              calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-//                calendar.set(Calendar.MINUTE, minute);
-//                updateTimeLabel();
-            //*******시간 선택 로직 추가
-            //*******예: 시간 선택 다이얼로그 표시
-//                    calendar.get(Calendar.HOUR_OF_DAY),
-//                    calendar.get(Calendar.MINUTE),
-//                    true);
-
-//            timePickerDialog.show();
             builder.setTitle("시간 선택");
             builder.setItems(timeOptions, (dialog, which) -> {
                 textViewDateLabel2.setText("지금은"+timeOptions[which]);
@@ -113,26 +109,41 @@ public class FragStar extends Fragment {
 
         // 저장 버튼 클릭 이벤트를 처리합니다.
         btn_Save.setOnClickListener(v -> {
-            String date = textViewDateLabel1.getText().toString();
-            String time = textViewDateLabel2.getText().toString();
-            int number = et_BloodSugar.getValue();
-            String note = et_Memo.getText().toString(); // 메모장 내용 가져오기
-
-            String message = String.format("날짜: %s, 시간: %s, 혈당 측정값: %d, 메모: %s", date, time, number, note);
-            Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+            String str_Date = et_Date.getText().toString();
+            String str_Time = et_Time.getText().toString();
+            String str_BloodSugar = Integer.toString(et_BloodSugar.getValue());
+            String str_Memo = et_Memo.getText().toString();
+            Log.i("TAG","ASDASFASfasfasfasfasf");
+            if (str_Date.isEmpty() || str_Time.isEmpty() || str_BloodSugar.isEmpty() || str_Memo.isEmpty()) {
+                Toast.makeText(getActivity(), "메모 저장 실패: 모든 필드를 채워주세요.", Toast.LENGTH_SHORT).show();
+            } else {
+                Log.i("TAG","into savememo");
+                saveMemo(str_Date, str_Time, str_BloodSugar, str_Memo);
+            }
         });
-
-/*      buttonCancel.setOnClickListener(v -> {
-            // FragHome으로 이동
-            FragmentManager fragmentManager = getParentFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, new FragHome()); // R.id.fragment_container는 실제 프래그먼트 컨테이너 ID로 대체해야 함
-            fragmentTransaction.addToBackStack(null); // 필요하다면 백스택에 추가해야 함
-            fragmentTransaction.commit();
-        });
-*/
-
         return view;
+    }
+    private void saveMemo(String date, String time, String bloodSugar, String memo) {
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        if (firebaseUser != null) {
+            UserMemo userMemo = new UserMemo(date, time, bloodSugar, memo);
+            DatabaseReference userMemosRef = mDatabaseRef.child("UserMemos").child(firebaseUser.getUid()).push();
+            Log.i("TAG", "Database Path: " + userMemosRef.toString());
+            userMemosRef.setValue(userMemo)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "메모 저장 성공");
+                                Toast.makeText(getActivity(), "메모 저장 성공", Toast.LENGTH_SHORT).show();
+                                // Save 되면 어디로 갈지?? 정하기
+                            } else {
+                                Log.e(TAG, "메모 저장 실패", task.getException());
+                                Toast.makeText(getActivity(), "메모 저장 실패", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
     }
 
     // 날짜 레이블을 업데이트하는 메서드입니다.
