@@ -1,6 +1,7 @@
 package com.cookandroid.login.Fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,13 +30,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+
 public class FragFriend extends Fragment {
 
     private EditText menuEditText;
     private Spinner mealSpinner;
     private Button saveButton;
     private TextView menuDisplayTextView;
-
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private FirebaseUser currentUser;
@@ -77,13 +78,11 @@ public class FragFriend extends Fragment {
         }
 
         String userId = currentUser.getUid();
-
-        // 현재 날짜와 시간 가져오기
-        String currentDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+        ImagePredict imageObj = new ImagePredict(meal, menu);
 
         // 해당 사용자 ID 아래에 아침/점심/저녁 메뉴 데이터 저장
-        DatabaseReference userRef = mDatabase.child("meals").child(userId).child(currentDateTime).child(meal);
-        userRef.setValue(menu)
+        DatabaseReference userRef = mDatabase.child("meals").child(userId).push();
+        userRef.setValue(imageObj)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -101,21 +100,16 @@ public class FragFriend extends Fragment {
     private void displayMenu() {
         String userId = currentUser.getUid();
         DatabaseReference userRef = mDatabase.child("meals").child(userId);
-
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot datasSnapshot) {
                 StringBuilder menuDisplay = new StringBuilder();
-                for (DataSnapshot dateSnapshot : dataSnapshot.getChildren()) {
-                    String dateTime = dateSnapshot.getKey();
-                    for (DataSnapshot mealSnapshot : dateSnapshot.getChildren()) {
-                        String meal = mealSnapshot.getKey();
-                        String menu = (String) mealSnapshot.getValue(); // ERROR1
-                        if (menu != null) {
-                            menuDisplay.append("Date and Time: ").append(dateTime).append("\n");
-                            menuDisplay.append("Meal: ").append(meal).append("\n");
-                            menuDisplay.append("Menu: ").append(menu).append("\n\n");
-                        }
+                for (DataSnapshot dataSnapshot : datasSnapshot.getChildren()) {
+                    ImagePredict imagePredict = dataSnapshot.getValue(ImagePredict.class);
+                    if (imagePredict != null) {
+                        menuDisplay.append("Date and Time: ").append(imagePredict.getDateTime()).append("\n");
+                        menuDisplay.append("Meal Time: ").append(imagePredict.getEatTime()).append("\n");
+                        menuDisplay.append("Menu Name: ").append(imagePredict.getImageName()).append("\n\n");
                     }
                 }
                 menuDisplayTextView.setText(menuDisplay.toString());
