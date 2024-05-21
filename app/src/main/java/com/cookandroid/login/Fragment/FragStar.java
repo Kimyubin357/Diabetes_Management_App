@@ -33,13 +33,13 @@ import java.util.Calendar;
 
 public class FragStar extends Fragment {
     private TextView textViewDateLabel1, textViewDateLabel2; // +d_1
-    private Button buttonSelectDate, buttonChoose, buttonSave, buttonCancel; // +d_2 //
+    private Button et_Date, et_Time, btn_Save, buttonCancel; // +d_2 //
     private DatePickerDialog datePickerDialog; // +b_1
     //    private RadioGroup radioGroupMealTime; +e_4 // +b_2
 //    private TimePickerDialog timePickerDialog;
-    private NumberPicker numberPicker;
+    private NumberPicker et_BloodSugar;
     private Calendar calendar;
-    private EditText editTextNote;
+    private EditText et_Memo;
 
     private final String[] timeOptions = {
             " 공복 ", " 아침 식전 ", " 아침 식후 ", " 점심 식전 ", " 점심 식후 ", " 저녁 식전 ", " 저녁 식후 ", " 자기 전 "
@@ -54,26 +54,26 @@ public class FragStar extends Fragment {
         // UI 컴포넌트를 초기화합니다.
         textViewDateLabel1 = view.findViewById(R.id.textViewDateLabel1);
         textViewDateLabel2 = view.findViewById(R.id.textViewDateLabel2);
-        buttonSelectDate = view.findViewById(R.id.buttonSelectDate);
-        buttonChoose = view.findViewById(R.id.buttonChoose);
-        buttonSave = view.findViewById(R.id.buttonSave);
-//        radioGroupMealTime = view.findViewById(R.id.radioGroupMealTime); +e_5
+        et_Date = view.findViewById(R.id.et_Date);
+        et_Time = view.findViewById(R.id.et_Time);
+        btn_Save = view.findViewById(R.id.btn_Save);
+//      radioGroupMealTime = view.findViewById(R.id.radioGroupMealTime); +e_5
 //      buttonCancel = view.findViewById(R.id.buttonCancel);
-        numberPicker = view.findViewById(R.id.numberPicker);
-        editTextNote = view.findViewById(R.id.editTextNote);
+        et_BloodSugar = view.findViewById(R.id.et_BloodSugar);
+        et_Memo = view.findViewById(R.id.et_Memo);
 
         // 달력 인스턴스를 초기화하고, NumberPicker를 설정합니다.
         calendar = Calendar.getInstance();
-        numberPicker.setMinValue(1);
-        numberPicker.setMaxValue(999); // (del)예시: 혈당 최대값 설정
-        numberPicker.setValue(100); // (del)예시: 초기값 설정
+        et_BloodSugar.setMinValue(1);
+        et_BloodSugar.setMaxValue(999); // (del)예시: 혈당 최대값 설정
+        et_BloodSugar.setValue(100); // (del)예시: 초기값 설정
 
         // 초기 날짜를 레이블에 설정합니다.
         updateDateLabel();
         updateTimeLabel();
 
         // 날짜 선택 다이얼로그를 설정합니다.
-        buttonSelectDate.setOnClickListener(v -> {
+        et_Date.setOnClickListener(v -> {
             datePickerDialog = new DatePickerDialog(getActivity(), (view1, year, monthOfYear, dayOfMonth) -> {
 
                 calendar.set(Calendar.YEAR, year);
@@ -89,7 +89,7 @@ public class FragStar extends Fragment {
         });
 
         // 시간 선택 버튼 이벤트를 처리합니다.
-        buttonChoose.setOnClickListener(v -> {
+        et_Time.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 //            RadioButton selectedMealTimeButton = view.findViewById(radioGroupMealTime.getCheckedRadioButtonId()); +e_6 // +b_3정도
 //            String mealTime = selectedMealTimeButton.getText().toString(); +e_7
@@ -112,11 +112,11 @@ public class FragStar extends Fragment {
         });
 
         // 저장 버튼 클릭 이벤트를 처리합니다.
-        buttonSave.setOnClickListener(v -> {
+        btn_Save.setOnClickListener(v -> {
             String date = textViewDateLabel1.getText().toString();
             String time = textViewDateLabel2.getText().toString();
-            int number = numberPicker.getValue();
-            String note = editTextNote.getText().toString(); // 메모장 내용 가져오기
+            int number = et_BloodSugar.getValue();
+            String note = et_Memo.getText().toString(); // 메모장 내용 가져오기
 
             String message = String.format("날짜: %s, 시간: %s, 혈당 측정값: %d, 메모: %s", date, time, number, note);
             Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
