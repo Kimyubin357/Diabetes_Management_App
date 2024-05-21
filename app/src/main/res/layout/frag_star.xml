@@ -1,18 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingTop="48dp"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
 
     <TextView
+        android:id="@+id/textViewDateLabel1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="스타 프래그먼트"
-        android:textSize="40sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="오늘은"
+        android:textSize="18sp"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/buttonSelectDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/textViewDateLabel1"
+        android:text="날짜 선택"
+        android:layout_marginStart="20dp"
+        android:layout_alignParentRight="true"/>
+
+    <TextView
+        android:id="@+id/textViewDateLabel2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="지금은"
+        android:layout_below="@id/textViewDateLabel1"
+        android:textSize="18sp"/>
+
+    <Button
+        android:id="@+id/buttonChoose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="시간 선택"
+        android:layout_toRightOf="@id/textViewDateLabel2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"/>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutNumberPicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/buttonChoose"
+        android:layout_marginTop="16dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="혈당 측정값"
+            android:layout_marginEnd="8dp"
+            android:textSize="18sp"/>
+
+        <NumberPicker
+            android:id="@+id/numberPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="mg/dL"
+            android:layout_marginStart="8dp"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayoutMemo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/linearLayoutNumberPicker"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="메모"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/editTextNote"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:padding="16dp"
+            android:hint="메모를 입력하세요"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_below="@id/linearLayoutMemo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/buttonCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="취소"/>
+
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="저장"
+            android:layout_marginStart="16dp"/>
+    </LinearLayout>
+</RelativeLayout>
