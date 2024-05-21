@@ -52,6 +52,7 @@ public class FragStar extends Fragment {
     private final String[] timeOptions = {
             " 공복 ", " 아침 식전 ", " 아침 식후 ", " 점심 식전 ", " 점심 식후 ", " 저녁 식전 ", " 저녁 식후 ", " 자기 전 "
     };
+    private final String Temp;
 
     @Nullable
     @Override
@@ -103,6 +104,7 @@ public class FragStar extends Fragment {
             builder.setTitle("시간 선택");
             builder.setItems(timeOptions, (dialog, which) -> {
                 textViewDateLabel2.setText("지금은"+timeOptions[which]);
+//                Temp = timeOptions[which];
             });
             builder.show();
         });
@@ -110,9 +112,15 @@ public class FragStar extends Fragment {
         // 저장 버튼 클릭 이벤트를 처리합니다.
         btn_Save.setOnClickListener(v -> {
             String str_Date = et_Date.getText().toString();
+//            if (Temp == NULL) {
+//                // 오늘 날짜로 update
+//            }
+//            String str_Date = Temp;
+
             String str_Time = et_Time.getText().toString();
             String str_BloodSugar = Integer.toString(et_BloodSugar.getValue());
             String str_Memo = et_Memo.getText().toString();
+
             Log.i("TAG","ASDASFASfasfasfasfasf");
             if (str_Date.isEmpty() || str_Time.isEmpty() || str_BloodSugar.isEmpty() || str_Memo.isEmpty()) {
                 Toast.makeText(getActivity(), "메모 저장 실패: 모든 필드를 채워주세요.", Toast.LENGTH_SHORT).show();

@@ -1,13 +1,19 @@
 package com.cookandroid.login;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class UserMemo { // 디비에 올릴 변수 리스트
     private String date;
     private String time;
     private String bloodSugar;
     private String memo;
 
+    private String realTime;
+
     public UserMemo() {
-        // 빈 생성자
+        this.realTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
     }
 
     public UserMemo(String date, String time, String bloodSugar, String memo) {
@@ -15,6 +21,7 @@ public class UserMemo { // 디비에 올릴 변수 리스트
         this.time = time;
         this.bloodSugar = bloodSugar;
         this.memo = memo;
+        this.realTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
     }
 
     public String getDate() {
@@ -47,5 +54,13 @@ public class UserMemo { // 디비에 올릴 변수 리스트
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public String getRealTime() {
+        return realTime;
+    }
+
+    public void setRealTime(String realTime) {
+        this.realTime = realTime;
     }
 }
