@@ -225,11 +225,11 @@ public class MainActivity extends AppCompatActivity {
                 ActivityResultLauncher<Intent> startActivityResult = registerForActivityResult(
                         new ActivityResultContracts.StartActivityForResult(),
                         new ActivityResultCallback<ActivityResult>() {
+                            // onActivityResult 내 예측 결과를 처리하는 부분의 끝에 추가
                             @Override
                             public void onActivityResult(ActivityResult result) {
-                                //원하는 기능 작성
                                 if (result.getResultCode() == Activity.RESULT_OK) {
-                                    Log.i(TAG,"check");
+                                    Log.i(TAG, "check");
                                     Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
 
                                     ExifInterface exif = null;
@@ -249,36 +249,40 @@ public class MainActivity extends AppCompatActivity {
                                     } else {
                                         exifDegree = 0;
                                     }
-                                    // 이미지 캡쳐 결과 뜬다
-                                    // 이미지 갤러리에 저장할 필요가 있다.
 
-                                    // Load and prepare the model
+                                    // 모델 로드 및 준비
                                     Bitmap bitmap2 = loadBitmap("image.jpg");
-                                    if (bitmap2 == null) {return;}
-                                    bitmap2 = resizeImage(bitmap2,480,480);
-                                    // 비트맵의 크기를 로그로 출력
+                                    if (bitmap2 == null) {
+                                        return;
+                                    }
+                                    bitmap2 = resizeImage(bitmap2, 480, 480);
+
+                                    // 모델 예측
                                     Module module = loadModel("Efficient-Mobile3.ptl");
-                                    if (module == null) {return;}
-                                    // Display image on UI
-                                    ImageView imageView = findViewById(R.id.main_floating_add_btn);
-                                    imageView.setImageBitmap(bitmap2);
-                                    // image -> tensor
+                                    if (module == null) {
+                                        return;
+                                    }
+
                                     Tensor inputTensor = prepareInputTensor(bitmap2);
-                                    // model predict
                                     String foodName = predict(module, inputTensor);
-                                    Log.i(TAG,"[predict]: "+foodName);
-                                    // 동현님 이 밑으로 DB Save Logic 만드시면 될 것 같습니다.
-                                            // bitmap2 변수가 이미지를 나타내는 변수이고
-                                            // foodName이 모델이 예측한 음식 이름 입니다!
-                                    // 그리고 display image도 새로운 프래그먼트로 이동하는 것으로 변경하면 될 것 같스비낟.
-                                    // display image
-                                    ((ImageView) findViewById(R.id.imgview)).setImageBitmap(rotate(bitmap2, exifDegree));
-                                }
-                                else{
-                                    Log.i(TAG,"not check");
+                                    Log.i(TAG, "[predict]: " + foodName);
+
+                                    // Bitmap을 바이트 배열로 변환
+                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                    bitmap2.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                    byte[] byteArray = stream.toByteArray();
+
+                                    // ResultActivity 시작
+                                    Intent intent = new Intent(MainActivity.this, ResultActivity.class);
+                                    intent.putExtra("foodName", foodName);
+                                    intent.putExtra("image", byteArray);
+                                    startActivity(intent);
+                                } else {
+                                    Log.i(TAG, "not check");
                                     Toast.makeText(getApplicationContext(), "Not Save Picture", Toast.LENGTH_SHORT).show();
                                 }
                             }
+
                         });
                 private Bitmap resizeImage(Bitmap bitmap, int imageWidth, int imageHeight){
                     Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, imageWidth, imageHeight, true);
