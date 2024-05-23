@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     //바텀 네비게이션
     BottomNavigationView bottomNavigationView;
 
-    private FloatingActionButton floatingActionButton;
+        private FloatingActionButton floatingActionButton;
 
     private String Tag = "메인";
 
