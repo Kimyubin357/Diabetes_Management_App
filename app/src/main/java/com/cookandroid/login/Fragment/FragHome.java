@@ -20,12 +20,13 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
 public class FragHome extends Fragment {
     private View view;
-    private Button buttonAlarm;
+    private FloatingActionButton buttonAlarm;
 
     private String TAG = "프래그먼트";
     LineChart lineChart;
