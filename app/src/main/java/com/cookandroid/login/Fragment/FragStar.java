@@ -52,7 +52,7 @@ public class FragStar extends Fragment {
     private final String[] timeOptions = {
             " 공복 ", " 아침 식전 ", " 아침 식후 ", " 점심 식전 ", " 점심 식후 ", " 저녁 식전 ", " 저녁 식후 ", " 자기 전 "
     };
-    private final String Temp;
+    private final String Temp="tmp";
 
     @Nullable
     @Override
