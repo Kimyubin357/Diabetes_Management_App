@@ -26,6 +26,62 @@ android:padding="16dp">
         android:layout_height="wrap_content"
         android:entries="@array/meal_options" />
 
+
+    <TextView
+        android:id="@+id/text_g"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="G: "
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/text_e"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="E: "
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/text_cal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cal: "
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/text_sug"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sug: "
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/text_fat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fat: "
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/text_pro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pro: "
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/text_na"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Na: "
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/text_chol"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Chol: "
+        android:textSize="18sp" />
     <Button
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"
