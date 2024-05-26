@@ -48,6 +48,8 @@ public class FragStar extends Fragment {
     private NumberPicker et_BloodSugar;
     private Calendar calendar;
     private EditText et_Memo;
+    private String selectedDateOption = "";
+    private String selectedTimeOption = "";
 
     private final String[] timeOptions = {
             " 공복 ", " 아침 식전 ", " 아침 식후 ", " 점심 식전 ", " 점심 식후 ", " 저녁 식전 ", " 저녁 식후 ", " 자기 전 "
@@ -103,27 +105,22 @@ public class FragStar extends Fragment {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("시간 선택");
             builder.setItems(timeOptions, (dialog, which) -> {
-                textViewDateLabel2.setText("지금은"+timeOptions[which]);
-//                Temp = timeOptions[which];
+                selectedTimeOption = timeOptions[which];
+                textViewDateLabel2.setText("지금은"+selectedTimeOption);
             });
             builder.show();
         });
 
         // 저장 버튼 클릭 이벤트를 처리합니다.
         btn_Save.setOnClickListener(v -> {
-            String str_Date = et_Date.getText().toString();
-//            if (Temp == NULL) {
-//                // 오늘 날짜로 update
-//            }
-//            String str_Date = Temp;
-
-            String str_Time = et_Time.getText().toString();
+            String str_Date = selectedDateOption;
+            String str_Time = selectedTimeOption;
             String str_BloodSugar = Integer.toString(et_BloodSugar.getValue());
             String str_Memo = et_Memo.getText().toString();
 
             Log.i("TAG","ASDASFASfasfasfasfasf");
-            if (str_Date.isEmpty() || str_Time.isEmpty() || str_BloodSugar.isEmpty() || str_Memo.isEmpty()) {
-                Toast.makeText(getActivity(), "메모 저장 실패: 모든 필드를 채워주세요.", Toast.LENGTH_SHORT).show();
+            if (str_Date.isEmpty() || str_Time.isEmpty() || str_BloodSugar.isEmpty()) {
+                Toast.makeText(getActivity(), "시간을 선택해 주세요", Toast.LENGTH_SHORT).show();
             } else {
                 Log.i("TAG","into savememo");
                 saveMemo(str_Date, str_Time, str_BloodSugar, str_Memo);
@@ -143,11 +140,11 @@ public class FragStar extends Fragment {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "메모 저장 성공");
-                                Toast.makeText(getActivity(), "메모 저장 성공", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "기록 완료", Toast.LENGTH_SHORT).show();
                                 // Save 되면 어디로 갈지?? 정하기
                             } else {
                                 Log.e(TAG, "메모 저장 실패", task.getException());
-                                Toast.makeText(getActivity(), "메모 저장 실패", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "기록 오류", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -161,7 +158,9 @@ public class FragStar extends Fragment {
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH)+1, //Java에서 1월은 0으로 시작!
                 calendar.get(Calendar.DAY_OF_MONTH));
-        textViewDateLabel1.setText("오늘은 " + formattedDate);
+        selectedDateOption = formattedDate;
+        et_Date.setText("날짜 선택");
+        textViewDateLabel1.setText("오늘은 " + selectedDateOption);
     }
 
     private void updateTimeLabel() {
