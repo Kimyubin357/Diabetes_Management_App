@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import com.cookandroid.login.Fragment.ImagePredict;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,11 +27,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,19 +58,25 @@ public class ResultActivity extends AppCompatActivity {
 
         // Get the data from the Intent
         String foodName = getIntent().getStringExtra("foodName");
-        byte[] byteArray = getIntent().getByteArrayExtra("image");
+        String imageUriString = getIntent().getStringExtra("imageUri");
+        Uri imageUri = Uri.parse(imageUriString);
 
-        // Convert byte array back to Bitmap
-        Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-
-        // food 상세 정보 mapping
-        String jsonData = loadJSONFromAsset(this,"label_mapping_nutrition.json");
+        // Convert URI to Bitmap
         try {
+            InputStream imageStream = getContentResolver().openInputStream(imageUri);
+            Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+
+            // Display the image and text
+            imageView.setImageBitmap(bitmap);
+            result_text.setText(foodName);
+
+            // food 상세 정보 mapping
+            String jsonData = loadJSONFromAsset(this, "label_mapping_nutrition.json");
             JSONObject jsonObject = new JSONObject(jsonData);
             JSONObject foodData = jsonObject.getJSONObject(foodName);
+
             // 텍스트 뷰 연결
             Map<String, TextView> textViews = new HashMap<>();
-
             textViews.put("g", findViewById(R.id.text_g)); // gram (기준 단위)
             textViews.put("e", findViewById(R.id.text_e)); // energy (에너지)
             textViews.put("cal", findViewById(R.id.text_cal)); // 탄수화물
@@ -82,14 +88,8 @@ public class ResultActivity extends AppCompatActivity {
 
             setTextViewData(foodData, textViews);
         } catch (Exception e) {
-            Log.i("TAG","og?");
-            e.printStackTrace();
+            Log.e("ResultActivity", "Error loading image", e);
         }
-
-        // Display the image and text
-        imageView.setImageBitmap(bitmap);
-        result_text.setText(foodName);
-
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +98,7 @@ public class ResultActivity extends AppCompatActivity {
             }
         });
     }
+
     public static String loadJSONFromAsset(Context context, String fileName) {
         String json = null;
         try {
@@ -106,7 +107,7 @@ public class ResultActivity extends AppCompatActivity {
             byte[] buffer = new byte[size];
             is.read(buffer);
             is.close();
-            json = new String(buffer,"UTF-8");
+            json = new String(buffer, "UTF-8");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -124,7 +125,6 @@ public class ResultActivity extends AppCompatActivity {
             textViews.get("pro").setText("Pro: " + foodData.getDouble("pro"));
             textViews.get("na").setText("Na: " + foodData.getDouble("na"));
             textViews.get("chol").setText("Chol: " + foodData.getDouble("chol"));
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -144,21 +144,20 @@ public class ResultActivity extends AppCompatActivity {
 
         // 해당 사용자 ID 아래에 아침/점심/저녁 메뉴 데이터 저장
         DatabaseReference userRef = mDatabase.child("meals").child(userId).push();
-        userRef.setValue(imageObj)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(ResultActivity.this, "메뉴가 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                            // 저장 후 MainActivity로 이동
-                            Intent intent = new Intent(ResultActivity.this, MainActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            Toast.makeText(ResultActivity.this, "메뉴를 저장하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+        userRef.setValue(imageObj).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(ResultActivity.this, "메뉴가 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                    // 저장 후 MainActivity로 이동
+                    Intent intent = new Intent(ResultActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(ResultActivity.this, "메뉴를 저장하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

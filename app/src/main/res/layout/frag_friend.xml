@@ -1,34 +1,27 @@
-<!-- frag_friend.xml -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/menuEditText"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/dateRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="메뉴를 입력하세요" />
-
-    <Spinner
-        android:id="@+id/mealSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/meal_options" />
-
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="저장" />
-
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        tools:listitem="@layout/item_date"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:scrollbars="horizontal"
+        app:layout_constraintTop_toTopOf="parent" />
     <TextView
         android:id="@+id/menuDisplayTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:textColor="@android:color/black"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@+id/dateRecyclerView"/>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

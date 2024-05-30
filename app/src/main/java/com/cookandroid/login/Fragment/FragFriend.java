@@ -14,7 +14,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.cookandroid.login.DateAdapter;
 import com.cookandroid.login.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,15 +30,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
+public class FragFriend extends Fragment implements DateAdapter.OnDateClickListener {
 
-
-public class FragFriend extends Fragment {
-
-    private EditText menuEditText;
-    private Spinner mealSpinner;
-    private Button saveButton;
+    private RecyclerView dateRecyclerView;
+    private DateAdapter dateAdapter;
+    private List<String> dateList;
     private TextView menuDisplayTextView;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
@@ -50,53 +53,67 @@ public class FragFriend extends Fragment {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         currentUser = mAuth.getCurrentUser();
 
-        menuEditText = view.findViewById(R.id.menuEditText);
-        mealSpinner = view.findViewById(R.id.mealSpinner);
-        saveButton = view.findViewById(R.id.saveButton);
         menuDisplayTextView = view.findViewById(R.id.menuDisplayTextView);
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveMenu();
-            }
-        });
+        dateRecyclerView = view.findViewById(R.id.dateRecyclerView);
+        dateRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
-        // 사용자가 저장한 메뉴 출력
+        dateList = generateDateList();
+
+        // 현재 날짜의 인덱스를 구한다.
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd", Locale.getDefault());
+        String currentDate = dateFormat.format(calendar.getTime());
+        int currentIndex = dateList.indexOf(currentDate);
+
+        // 현재 날짜의 인덱스가 리스트의 중앙에 오도록 조정
+        dateRecyclerView.scrollToPosition(currentIndex);
+
+        dateAdapter = new DateAdapter(dateList, this);
+        dateRecyclerView.setAdapter(dateAdapter);
+
         displayMenu();
 
         return view;
     }
 
-    private void saveMenu() {
-        String meal = mealSpinner.getSelectedItem().toString();
-        String menu = menuEditText.getText().toString().trim();
+    private List<String> generateDateList() {
+        List<String> dates = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd", Locale.getDefault());
 
-        if (meal.isEmpty() || menu.isEmpty()) {
-            Toast.makeText(getActivity(), "메뉴와 식사 시간을 모두 입력하세요.", Toast.LENGTH_SHORT).show();
-            return;
+        // 현재 달의 날짜 추가
+        calendar.set(Calendar.DAY_OF_MONTH, 1); // 현재 달의 첫 날로 설정
+        int maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH); // 현재 달의 마지막 날짜
+        for (int i = 1; i <= maxDay; i++) {
+            dates.add(dateFormat.format(calendar.getTime()));
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-        String userId = currentUser.getUid();
-        ImagePredict imageObj = new ImagePredict(meal, menu);
+        // 이전 달의 날짜 추가
+        calendar.set(Calendar.DAY_OF_MONTH, 1); // 이전 달의 첫 날로 설정
+        maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH); // 이전 달의 마지막 날짜
+        for (int i = 1; i <= maxDay; i++) {
+            dates.add(dateFormat.format(calendar.getTime()));
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
 
-        // 해당 사용자 ID 아래에 아침/점심/저녁 메뉴 데이터 저장
-        DatabaseReference userRef = mDatabase.child("meals").child(userId).push();
-        userRef.setValue(imageObj)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(getActivity(), "메뉴가 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                            // 저장 후 다시 출력
-                            displayMenu();
-                        } else {
-                            Toast.makeText(getActivity(), "메뉴를 저장하는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+        // 다음 달의 날짜 추가
+        calendar.set(Calendar.DAY_OF_MONTH, 1); // 다음 달의 첫 날로 설정
+        maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH); // 다음 달의 마지막 날짜
+        for (int i = 1; i <= maxDay; i++) {
+            dates.add(dateFormat.format(calendar.getTime()));
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        return dates;
     }
 
+    @Override
+    public void onDateClick(int position) {
+        String selectedDate = dateList.get(position);
+        Toast.makeText(getActivity(), "Selected date: " + selectedDate, Toast.LENGTH_SHORT).show();
+    }
     private void displayMenu() {
         String userId = currentUser.getUid();
         DatabaseReference userRef = mDatabase.child("meals").child(userId);
