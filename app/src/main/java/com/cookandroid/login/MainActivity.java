@@ -220,12 +220,29 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(Tag,imageFilePath);
                     return image;
                 }
+                private Uri saveImageToFile(Bitmap bitmap) throws IOException {
+                    // 파일 이름 생성
+                    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                    String imageFileName = "JPEG_" + timeStamp + "_";
+                    File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    File imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+                    // Bitmap을 JPEG 파일로 저장
+                    try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
+                    }
+
+                    // 파일의 URI를 반환
+                    return FileProvider.getUriForFile(MainActivity.this, getPackageName(), imageFile);
+                }
+
 
                 // 이미지 찍은 후 결과 처리 함수
                 ActivityResultLauncher<Intent> startActivityResult = registerForActivityResult(
                         new ActivityResultContracts.StartActivityForResult(),
                         new ActivityResultCallback<ActivityResult>() {
                             // onActivityResult 내 예측 결과를 처리하는 부분의 끝에 추가
+
                             @Override
                             public void onActivityResult(ActivityResult result) {
                                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -267,16 +284,19 @@ public class MainActivity extends AppCompatActivity {
                                     String foodName = predict(module, inputTensor);
                                     Log.i(TAG, "[predict]: " + foodName);
 
-                                    // Bitmap을 바이트 배열로 변환
-                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                    bitmap2.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                    byte[] byteArray = stream.toByteArray();
+                                    try {
+                                        // Bitmap을 파일로 저장하고 URI를 얻음
+                                        Uri imageUri = saveImageToFile(bitmap2);
 
-                                    // ResultActivity 시작
-                                    Intent intent = new Intent(MainActivity.this, ResultActivity.class);
-                                    intent.putExtra("foodName", foodName);
-                                    intent.putExtra("image", byteArray);
-                                    startActivity(intent);
+                                        // ResultActivity 시작
+                                        Intent intent = new Intent(MainActivity.this, ResultActivity.class);
+                                        intent.putExtra("foodName", foodName);
+                                        intent.putExtra("imageUri", imageUri.toString());
+                                        startActivity(intent);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                        Toast.makeText(getApplicationContext(), "Failed to save image", Toast.LENGTH_SHORT).show();
+                                    }
                                 } else {
                                     Log.i(TAG, "not check");
                                     Toast.makeText(getApplicationContext(), "Not Save Picture", Toast.LENGTH_SHORT).show();
