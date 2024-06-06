@@ -14,8 +14,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -64,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     //바텀 네비게이션
     BottomNavigationView bottomNavigationView;
 
-        private FloatingActionButton floatingActionButton;
+    private FloatingActionButton floatingActionButton;
 
     private String Tag = "메인";
 
@@ -111,6 +114,11 @@ public class MainActivity extends AppCompatActivity {
 
             //바텀 네비게이션
             bottomNavigationView = findViewById(R.id.bottomNavigationView);
+
+            setCustomLayout(bottomNavigationView.getMenu().findItem(R.id.home), R.layout.bottom_nav_item, "홈");
+            setCustomLayout(bottomNavigationView.getMenu().findItem(R.id.star), R.layout.bottom_nav_item, "다이어리");
+            setCustomLayout(bottomNavigationView.getMenu().findItem(R.id.group), R.layout.bottom_nav_item, "음식");
+            setCustomLayout(bottomNavigationView.getMenu().findItem(R.id.hotel), R.layout.bottom_nav_item, "프로필");
 
             //리스터 등록
             bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
@@ -383,6 +391,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    private void setCustomLayout(MenuItem menuItem, int layoutRes, String title) {
+        View view = LayoutInflater.from(this).inflate(layoutRes, null);
+        ImageView icon = view.findViewById(R.id.icon);
+        TextView text = view.findViewById(R.id.title);
+
+        icon.setImageDrawable(menuItem.getIcon());
+        text.setText(title);
+
+        menuItem.setActionView(view);
+    }
+
+
     public List<String> getLabelData(){
         List<String> foodList = new ArrayList<>();
         try {

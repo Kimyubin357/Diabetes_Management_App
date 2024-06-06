@@ -3,15 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/home"
-        android:icon="@drawable/home"
+        android:icon="@drawable/heart"
         android:title="홈"
         android:enabled="true"
         />
 
     <item
         android:id="@+id/star"
-        android:icon="@drawable/star"
-        android:title="즐겨찾기"
+        android:icon="@drawable/diary"
+        android:title="다이어리"
         android:enabled="true"
         />
 
@@ -21,14 +21,14 @@
 
     <item
         android:id="@+id/group"
-        android:icon="@drawable/group"
-        android:title="친구"
+        android:icon="@drawable/food"
+        android:title="음식"
         android:enabled="true"
         />
     <item
         android:id="@+id/hotel"
-        android:icon="@drawable/hotel"
-        android:title="호텔"
+        android:icon="@drawable/profile"
+        android:title="프로필"
         android:enabled="true"
         />
 
