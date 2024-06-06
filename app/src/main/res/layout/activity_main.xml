@@ -35,6 +35,8 @@
         app:fabCradleMargin="5dp"
         app:fabCradleRoundedCornerRadius="10dp">
 
+
+
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
             android:layout_width="match_parent"
@@ -48,6 +50,7 @@
             app:itemTextAppearance="@style/BottomNavigationView.TextAppearance"
             app:labelVisibilityMode="labeled"
             app:menu="@menu/bottom_menu"/>
+
     </com.google.android.material.bottomappbar.BottomAppBar>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

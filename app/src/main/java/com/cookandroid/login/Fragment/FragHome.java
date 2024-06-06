@@ -1,6 +1,7 @@
 package com.cookandroid.login.Fragment;
 
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.cookandroid.login.AlarmActivity;
@@ -18,10 +20,18 @@ import com.cookandroid.login.MainActivity;
 import com.cookandroid.login.ModifyActivity;
 import com.cookandroid.login.R;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -78,16 +88,84 @@ public class FragHome extends Fragment {
 
         lineChart = view.findViewById(R.id.day_time_chart); // 초기화
 
-        clickDate = "2024년 06월 02일"; // 선택 날짜 임의로 지정 -> 추후에 홈에 바뀌는 날짜 값을 가져오는 것으로 변경!!!!
+        clickDate = "2024년 06월 03일"; // 선택 날짜 임의로 지정 -> 추후에 홈에 바뀌는 날짜 값을 가져오는 것으로 변경!!!!
 
         data1(clickDate, new DataCallback() {
             @Override
             public void onDataReady(ArrayList<Entry> dataList) {
                 LineDataSet lineDataSet1 = new LineDataSet(dataList, "하루 혈당"); // dataset 만들기
-                ArrayList<ILineDataSet> dataSets = new ArrayList<>(); // 데이터셋 추가
+
+                // 데이터셋 스타일링
+                lineDataSet1.setColor(ContextCompat.getColor(getContext(), R.color.line_color)); // 라인 색상
+                lineDataSet1.setValueTextColor(ContextCompat.getColor(getContext(), R.color.value_text_color)); // 값 텍스트 색상
+                lineDataSet1.setValueTextSize(16f); // 텍스트 크기 설정
+                lineDataSet1.setLineWidth(2f); // 라인 두께
+                lineDataSet1.setCircleColor(ContextCompat.getColor(getContext(), R.color.circle_color)); // 데이터 포인트 색상
+                lineDataSet1.setCircleRadius(5f); // 데이터 포인트 반경
+                lineDataSet1.setDrawValues(true); // 값 표시 여부
+
+                // 데이터셋 추가
+                ArrayList<ILineDataSet> dataSets = new ArrayList<>();
                 dataSets.add(lineDataSet1);
                 LineData data = new LineData(dataSets); // 라인 데이터에 리스트 추가
                 lineChart.setData(data); // 차트에 라인 데이터 추가
+
+                // 추가 차트 설정
+                Description description = new Description();
+                description.setText("오늘 하루 혈당 수치");
+                description.setTextColor(ContextCompat.getColor(getContext(), R.color.chart_description_color));
+                description.setTextSize(12f);
+                description.setTextAlign(Paint.Align.CENTER); // 그래프 제목 정렬 설정
+                lineChart.setDescription(description);
+
+                Legend legend = lineChart.getLegend();
+                legend.setEnabled(true); // 범례 활성화
+                legend.setTextColor(ContextCompat.getColor(getContext(), R.color.legend_text_color));
+                legend.setTextSize(14f);
+
+                // X축 설정
+                XAxis xAxis = lineChart.getXAxis();
+                xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); // X축 위치를 아래쪽으로 설정
+//                xAxis.setGranularity(1f); // x축 간격 설정 (예시: 1)
+//                xAxis.setGranularityEnabled(true); // x축 간격 활성화
+
+                // x축 레이블 설정
+                int dataSize = dataList.size();
+                String[] labels = new String[]{"공복", "아침 식전", "아침 식후", "점심 식전", "점심 식후", "저녁 식전", "저녁 식후", "자기 전"};
+
+                String[] labels2 = new String[dataSize];
+                for (int i = 0; i < dataSize; i++) {
+
+                    Entry temp = dataList.get(i);
+                    Log.i("TAG",labels[(int)temp.getX()]);
+                    labels2[i] = labels[(int)temp.getX()];
+                }
+                Log.i("TAG",labels2.toString());
+                Log.i("TAG",dataList.toString());
+                xAxis.setAxisMinimum(0f); // x축 최소값 설정
+                xAxis.setLabelCount(dataSize); // 레이블 개수 설정
+//                xAxis.setAxisMaximum(labels.length - 1f); // x축 최대값 설정
+//                xAxis.setLabelCount(3); // 레이블 개수 설정
+//                String[] labels = new String[dataSize];
+//                xAxis.setValueFormatter(new IndexAxisValueFormatter()); // 레이블 포맷터 설정
+
+
+//                xAxis.setValueFormatter(new ValueFormatter() {
+//                    @Override
+//                    public String getAxisLabel(float value, AxisBase axis) {
+//                        int index = (int) value;
+//                        if (index >= 0 && index < 10) {
+//                            return labels[index];
+//                        } else {
+//                            return "";
+//                        }
+//                    }
+//                });
+
+
+                lineChart.setDrawGridBackground(false); // 그리드 배경 비활성화
+                lineChart.setDrawBorders(false); // 차트 경계선 비활성화
+
                 lineChart.invalidate(); // 차트 초기화
             }
         });
@@ -126,7 +204,8 @@ public class FragHome extends Fragment {
                     for (int i = 0; i < sortedTimes.size(); i++) {
                         Integer time = sortedTimes.get(i);
                         String bloodSugar = timeBloodSugarMap.get(time);
-                        dataList.add(new Entry(i+10,Integer.parseInt(bloodSugar)));
+                        Log.i("TAG","HOHOHO"+bloodSugar);
+                        dataList.add(new Entry(time,Integer.parseInt(bloodSugar)));
 
                     }
                     // 데이터가 준비되었음을 콜백을 통해 알림 -> 비동기

@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
             ///////////////  최근 상세 정보들 누르면 상세 정보 activity로 이동하게  ///////////////
 
             if (bitmap != null) {
-                imageView.setImageBitmap(bitmap);
+//                imageView.setImageBitmap(bitmap);
             } else {
                 Log.e("TAG", "Failed to load image");
             }

@@ -8,4 +8,10 @@
     <color name="our_red">#E8241C</color>
     <color name="gray">#696969</color>
     <color name="dark_red">#750101</color>
+    <color name="chart_background">#FFFFFF</color> <!-- 차트 배경색 -->
+    <color name="line_color">#E8241C</color> <!-- 라인 색상 -->
+    <color name="value_text_color">#E8241C</color> <!-- 값 텍스트 색상 -->
+    <color name="circle_color">#E8241C</color> <!-- 데이터 포인트 색상 -->
+    <color name="chart_description_color">#000000</color> <!-- 차트 설명 색상 -->
+    <color name="legend_text_color">#000000</color> <!-- 범례 텍스트 색상 -->
 </resources>
