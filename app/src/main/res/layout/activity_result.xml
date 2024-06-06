@@ -1,91 +1,267 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-android:padding="16dp">
-
-<ImageView
-    android:id="@+id/result_image"
     android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1"
-    android:contentDescription="Captured Image" />
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="40dp">
 
-<EditText
-    android:id="@+id/result_text"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textSize="24sp"
-    android:textColor="@android:color/black"
-    android:paddingTop="16dp"/>
+    <ImageView
+        android:id="@+id/result_image"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:contentDescription="Captured Image" />
 
-    <Spinner
-        android:id="@+id/mealSpinner"
+    <EditText
+        android:id="@+id/result_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:entries="@array/meal_options" />
+        android:textSize="24sp"
+        android:textColor="@android:color/black"
+        android:paddingTop="16dp"/>
 
-
-    <TextView
-        android:id="@+id/text_g"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="G: "
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/text_e"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="#EEEEEE"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+    <!-- 첫 번째 LinearLayout -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="E: "
-        android:textSize="18sp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <TextView
+            android:id="@+id/textyung"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="영양정보"
+            android:textStyle="bold"
+            android:textColor="@color/red"
+            android:textSize="40sp" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <Spinner
+            android:id="@+id/mealSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/meal_options" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/text_cal"
+    <!-- 두 번째 LinearLayout -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Cal: "
-        android:textSize="18sp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="총 내용량"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/text_g"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="G: "
+            android:textSize="18sp" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/text_sug"
+    <!-- 세 번째 LinearLayout -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sug: "
-        android:textSize="18sp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="에너지"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/text_e"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="E: "
+            android:textSize="18sp" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/text_fat"
+    <!-- 네 번째 LinearLayout -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Fat: "
-        android:textSize="18sp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="칼로리"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/text_cal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cal: "
+            android:textSize="18sp" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/text_pro"
+    <!-- 다섯 번째 LinearLayout -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Pro: "
-        android:textSize="18sp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/text_na"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="당류"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/text_sug"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sug: "
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <!-- 여섯 번째 LinearLayout -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Na: "
-        android:textSize="18sp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="지방"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/text_fat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fat: "
+            android:textSize="18sp" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/text_chol"
+    <!-- 일곱 번째 LinearLayout -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Chol: "
-        android:textSize="18sp" />
-    <Button
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="단백질"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/text_pro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pro: "
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <!-- 여덟 번째 LinearLayout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="나트륨"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/text_na"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Na: "
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <!-- 아홉 번째 LinearLayout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="콜레스테롤"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/text_chol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chol: "
+            android:textSize="18sp" />
+    </LinearLayout>
+</LinearLayout>
+    <!-- 마지막으로 버튼 -->
+    <android.widget.Button
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="저장" />
+        android:text="푸드 AI로 음식 추가"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:background="@drawable/button_bg"
+        android:layout_marginStart="16dp"
+        android:layout_margin="15dp"
+        android:paddingRight="50dp"
+        android:paddingLeft="50dp"/>
+
 </LinearLayout>
+
 
