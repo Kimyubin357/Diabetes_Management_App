@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.cookandroid.login.DateAdapter;
+import com.cookandroid.login.MenuAdapter;
 import com.cookandroid.login.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -39,11 +40,13 @@ public class FragFriend extends Fragment implements DateAdapter.OnDateClickListe
     private RecyclerView dateRecyclerView;
     private DateAdapter dateAdapter;
     private List<String> dateList;
-    private TextView menuDisplayTextView;
+    private RecyclerView menuRecyclerView;
+    private MenuAdapter menuAdapter;
+    private List<ImagePredict> menuList;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private FirebaseUser currentUser;
-
+    private TextView emptyMenuTextView;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -53,10 +56,9 @@ public class FragFriend extends Fragment implements DateAdapter.OnDateClickListe
         mDatabase = FirebaseDatabase.getInstance().getReference();
         currentUser = mAuth.getCurrentUser();
 
-        menuDisplayTextView = view.findViewById(R.id.menuDisplayTextView);
-
         dateRecyclerView = view.findViewById(R.id.dateRecyclerView);
         dateRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        emptyMenuTextView=view.findViewById(R.id.emptyMenuTextView);
 
         dateList = generateDateList();
 
@@ -67,40 +69,49 @@ public class FragFriend extends Fragment implements DateAdapter.OnDateClickListe
         int currentIndex = dateList.indexOf(currentDate);
 
         // 현재 날짜의 인덱스가 리스트의 중앙에 오도록 조정
-        dateRecyclerView.scrollToPosition(currentIndex);
+        dateRecyclerView.scrollToPosition(currentIndex-2);
 
         dateAdapter = new DateAdapter(dateList, this);
         dateRecyclerView.setAdapter(dateAdapter);
 
-        displayMenu();
+        menuRecyclerView = view.findViewById(R.id.menuRecyclerView);
+        menuRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        menuList = new ArrayList<>();
+        menuAdapter = new MenuAdapter(menuList);
+        menuRecyclerView.setAdapter(menuAdapter);
+
+
+        displayMenu(currentDate);
 
         return view;
     }
-
     private List<String> generateDateList() {
         List<String> dates = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd", Locale.getDefault());
 
-        // 현재 달의 날짜 추가
-        calendar.set(Calendar.DAY_OF_MONTH, 1); // 현재 달의 첫 날로 설정
-        int maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH); // 현재 달의 마지막 날짜
+        // 이전 달의 날짜 추가
+        calendar.add(Calendar.MONTH, -1);
+        int maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH); // 이전 달의 마지막 날짜
+        calendar.set(Calendar.DAY_OF_MONTH, 1); // 이전 달의 첫 날로 설정
         for (int i = 1; i <= maxDay; i++) {
             dates.add(dateFormat.format(calendar.getTime()));
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-        // 이전 달의 날짜 추가
-        calendar.set(Calendar.DAY_OF_MONTH, 1); // 이전 달의 첫 날로 설정
-        maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH); // 이전 달의 마지막 날짜
+        // 현재 달의 날짜 추가
+        calendar = Calendar.getInstance(); // 달을 현재 달로 다시 설정
+        maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH); // 현재 달의 마지막 날짜
+        calendar.set(Calendar.DAY_OF_MONTH, 1); // 현재 달의 첫 날로 설정
         for (int i = 1; i <= maxDay; i++) {
             dates.add(dateFormat.format(calendar.getTime()));
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
         // 다음 달의 날짜 추가
-        calendar.set(Calendar.DAY_OF_MONTH, 1); // 다음 달의 첫 날로 설정
+        calendar.add(Calendar.MONTH, 1);
         maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH); // 다음 달의 마지막 날짜
+        calendar.set(Calendar.DAY_OF_MONTH, 1); // 다음 달의 첫 날로 설정
         for (int i = 1; i <= maxDay; i++) {
             dates.add(dateFormat.format(calendar.getTime()));
             calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -109,27 +120,34 @@ public class FragFriend extends Fragment implements DateAdapter.OnDateClickListe
         return dates;
     }
 
+
     @Override
     public void onDateClick(int position) {
         String selectedDate = dateList.get(position);
         Toast.makeText(getActivity(), "Selected date: " + selectedDate, Toast.LENGTH_SHORT).show();
+        displayMenu(selectedDate);
     }
-    private void displayMenu() {
+    private void displayMenu(String selectedDate) {
         String userId = currentUser.getUid();
         DatabaseReference userRef = mDatabase.child("meals").child(userId);
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot datasSnapshot) {
-                StringBuilder menuDisplay = new StringBuilder();
-                for (DataSnapshot dataSnapshot : datasSnapshot.getChildren()) {
-                    ImagePredict imagePredict = dataSnapshot.getValue(ImagePredict.class);
-                    if (imagePredict != null) {
-                        menuDisplay.append("Date and Time: ").append(imagePredict.getDateTime()).append("\n");
-                        menuDisplay.append("Meal Time: ").append(imagePredict.getEatTime()).append("\n");
-                        menuDisplay.append("Menu Name: ").append(imagePredict.getImageName()).append("\n\n");
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                menuList.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    ImagePredict imagePredict = snapshot.getValue(ImagePredict.class);
+                    if (imagePredict != null && imagePredict.getDateTime().contains(selectedDate)) {
+                        menuList.add(imagePredict);
                     }
                 }
-                menuDisplayTextView.setText(menuDisplay.toString());
+                menuAdapter.notifyDataSetChanged();
+
+                // 데이터가 비어있을 때 메뉴가 없음을 표시
+                if (menuList.isEmpty()) {
+                    emptyMenuTextView.setVisibility(View.VISIBLE);
+                } else {
+                    emptyMenuTextView.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -138,4 +156,5 @@ public class FragFriend extends Fragment implements DateAdapter.OnDateClickListe
             }
         });
     }
+
 }
