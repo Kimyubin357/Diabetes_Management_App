@@ -160,7 +160,7 @@ public class FragStar extends Fragment {
                 calendar.get(Calendar.DAY_OF_MONTH));
         selectedDateOption = formattedDate;
         et_Date.setText("날짜 선택");
-        textViewDateLabel1.setText("오늘은 " + selectedDateOption);
+        textViewDateLabel1.setText(selectedDateOption);
     }
 
     private void updateTimeLabel() {
@@ -168,6 +168,6 @@ public class FragStar extends Fragment {
                 "%02d시 %02d분",
                 calendar.get(Calendar.HOUR_OF_DAY),
                 calendar.get(Calendar.MINUTE));
-        textViewDateLabel2.setText("지금은 " + formattedTime);
+        textViewDateLabel2.setText(formattedTime);
     }
 }
