@@ -2,59 +2,133 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="48dp"
-    android:paddingBottom="16dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp">
-
-    <TextView
-        android:id="@+id/textViewDateLabel1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="오늘은"
-        android:textSize="18sp"/>
-
-    <Button
-        android:id="@+id/et_Date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/textViewDateLabel1"
-        android:text="날짜 선택"
-        android:layout_marginStart="20dp"
-        android:layout_alignParentRight="true"/>
-
-    <TextView
-        android:id="@+id/textViewDateLabel2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="지금은"
-        android:layout_below="@id/textViewDateLabel1"
-        android:textSize="18sp"/>
-
-    <Button
-        android:id="@+id/et_Time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="시간 선택"
-        android:layout_toRightOf="@id/textViewDateLabel2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
-
+    android:background="#FFFFFF">
     <LinearLayout
-        android:id="@+id/linearLayoutNumberPicker"
+        android:id="@+id/linearLayoutprofile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#FF0000"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="혈당 추가"
+            android:textSize="24sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:padding="8dp" />
+    </LinearLayout>
+
+    <!-- Top section with date and time selection -->
+    <LinearLayout
+        android:layout_below="@id/linearLayoutprofile"
+        android:id="@+id/linearLayoutdate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="15dp"
+            android:background="#E0E0E0"
+            android:padding="8dp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <TextView
+                android:id="@+id/ohnll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" 오늘은 "
+                android:textSize="18sp"
+                android:textColor="#FF0000"/>
+
+            <TextView
+                android:id="@+id/textViewDateLabel1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="오늘날짜"
+                android:textSize="18sp"/>
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <android.widget.Button
+                android:id="@+id/et_Date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="날짜 선택"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/button_bg"
+                android:layout_marginStart="16dp"
+                android:layout_margin="5dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+            <TextView
+                android:id="@+id/zgg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" 지금은 "
+                android:textSize="18sp"
+                android:textColor="#FF0000"/>
+
+            <TextView
+                android:id="@+id/textViewDateLabel2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="지금날짜"
+                android:textSize="18sp"/>
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <android.widget.Button
+                android:id="@+id/et_Time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="시간 선택"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/button_bg"
+                android:layout_marginStart="16dp"
+                android:layout_margin="5dp"/>
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="15dp"
+            android:background="#E0E0E0"
+            android:padding="8dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Blood sugar measurement section -->
+    <LinearLayout
+        android:layout_below="@id/linearLayoutdate"
+        android:id="@+id/linearLayoutNumberPicker"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
         android:orientation="horizontal"
-        android:layout_below="@id/et_Time"
-        android:layout_marginTop="16dp"
         android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="혈당 측정값"
-            android:layout_marginEnd="8dp"
-            android:textSize="18sp"/>
+            android:textSize="18sp"
+            android:textColor="#FF0000"
+            android:layout_marginEnd="8dp"/>
 
         <NumberPicker
             android:id="@+id/et_BloodSugar"
@@ -65,54 +139,57 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="mg/dL"
-            android:layout_marginStart="8dp"
-            android:textSize="18sp"/>
+            android:textSize="18sp"
+            android:layout_marginStart="8dp"/>
     </LinearLayout>
 
+    <!-- Memo section -->
     <LinearLayout
         android:id="@+id/linearLayoutMemo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_below="@id/linearLayoutNumberPicker"
-        android:layout_marginTop="16dp">
-
+        android:layout_below="@id/linearLayoutNumberPicker">
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="메모"
-            android:textSize="18sp"
-            android:layout_marginBottom="8dp"/>
-
+            android:layout_width="match_parent"
+            android:layout_height="15dp"
+            android:background="#E0E0E0"
+            android:padding="8dp"
+            android:textStyle="bold" />
         <EditText
             android:id="@+id/et_Memo"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:padding="16dp"
-            android:hint="메모를 입력하세요"
-            android:textSize="18sp"/>
+            android:background="@drawable/edittext_bg"
+            android:hint="혈당과 관련된 내용을 자유롭게 메모하세요."
+            android:textSize="18sp"
+            android:layout_margin="15dp"/>
     </LinearLayout>
 
+    <!-- Bottom section with save and cancel buttons -->
     <LinearLayout
         android:layout_below="@id/linearLayoutMemo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
         android:gravity="center">
 
-        <Button
+        <android.widget.Button
             android:id="@+id/buttonCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="취소"/>
+            android:text="취소"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/button_bg"/>
 
-        <Button
+        <android.widget.Button
             android:id="@+id/btn_Save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="저장"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/button_bg"
             android:layout_marginStart="16dp"/>
     </LinearLayout>
 </RelativeLayout>
