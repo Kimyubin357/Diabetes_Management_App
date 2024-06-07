@@ -21,11 +21,32 @@
         app:layout_constraintGuide_percent="0.065" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_whitebar2.5"
+        android:id="@+id/guideline_whitebar2_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="50dp" />
+        app:layout_constraintGuide_percent="0.0675" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_whitebar2_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.585"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_whitebar2_tmp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.6"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_whitebar2_tmp2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.7"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_whitebar3"
@@ -33,6 +54,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.03" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_whitebar3_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.06" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_whitebar4"
@@ -53,7 +81,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/guideline_whitebar"/>
 
-    <!-- Floating Action Button for Alarm -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_alarm"
         android:layout_width="wrap_content"
@@ -92,7 +119,7 @@
         android:layout_marginBottom="35dp"
         android:padding="0dp"
         app:layout_constraintStart_toEndOf="@+id/guideline_whitebar4"
-        app:layout_constraintTop_toTopOf="@id/guideline_whitebar2.5"
+        app:layout_constraintTop_toTopOf="@id/guideline_whitebar2_2"
         android:layout_marginTop="6dp"/>
 
     <android.widget.Button
@@ -166,4 +193,145 @@
         </androidx.cardview.widget.CardView>
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/history"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="기록"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="0dp"
+        android:padding="0dp"
+        app:layout_constraintStart_toEndOf="@+id/guideline_whitebar3_2"
+        app:layout_constraintBottom_toTopOf="@id/guideline_whitebar2_4"
+        android:layout_marginTop="6dp"/>
+
+    <android.widget.TextView
+        android:id="@+id/americano"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:text="아메리카노"
+
+        android:textStyle="bold"
+
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_whitebar2_tmp"/>
+
+    <TextView
+        android:id="@+id/americano_kcal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="10kcal"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/americano"
+        app:layout_constraintTop_toBottomOf="@+id/americano"/>
+
+    <TextView
+        android:id="@+id/americano_eating_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="오후 9:45"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/americano"
+        app:layout_constraintTop_toBottomOf="@+id/americano_kcal"/>
+
+    <ImageView
+        android:id="@+id/americano_img"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitStart"
+        android:src="@drawable/drop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline_whitebar3"
+        app:layout_constraintTop_toBottomOf="@id/americano"
+        app:layout_constraintDimensionRatio="8" />
+
+    <android.widget.TextView
+        android:id="@+id/americano_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:text="상세 &gt;"
+
+        android:textStyle="bold"
+
+        android:textSize="13sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/americano"/>
+
+    <android.widget.TextView
+        android:id="@+id/chocolate_milk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:text="초코우유"
+
+        android:textStyle="bold"
+
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_whitebar2_tmp2"/>
+
+    <TextView
+        android:id="@+id/chocolate_milk_kcal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="170kcal"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/chocolate_milk"
+        app:layout_constraintTop_toBottomOf="@+id/chocolate_milk"/>
+
+    <TextView
+        android:id="@+id/chocolate_milk_eating_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="오후 10:26"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/chocolate_milk"
+        app:layout_constraintTop_toBottomOf="@+id/chocolate_milk_kcal"/>
+
+    <ImageView
+        android:id="@+id/chocolate_milk_img"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitStart"
+        android:src="@drawable/drop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline_whitebar3"
+        app:layout_constraintTop_toBottomOf="@id/chocolate_milk"
+        app:layout_constraintDimensionRatio="8" />
+
+    <android.widget.TextView
+        android:id="@+id/chocolate_milk_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:text="상세 &gt;"
+
+        android:textStyle="bold"
+
+        android:textSize="13sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chocolate_milk"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
