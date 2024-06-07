@@ -1,5 +1,6 @@
 package com.cookandroid.login.Fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,8 +34,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CountDownLatch;
+
 public class FragFriend extends Fragment implements DateAdapter.OnDateClickListener {
 
     private RecyclerView dateRecyclerView;
@@ -77,7 +82,7 @@ public class FragFriend extends Fragment implements DateAdapter.OnDateClickListe
         menuRecyclerView = view.findViewById(R.id.menuRecyclerView);
         menuRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         menuList = new ArrayList<>();
-        menuAdapter = new MenuAdapter(menuList);
+        menuAdapter = new MenuAdapter(Collections.unmodifiableList(menuList));
         menuRecyclerView.setAdapter(menuAdapter);
 
 
@@ -129,32 +134,92 @@ public class FragFriend extends Fragment implements DateAdapter.OnDateClickListe
     }
     private void displayMenu(String selectedDate) {
         String userId = currentUser.getUid();
-        DatabaseReference userRef = mDatabase.child("meals").child(userId);
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference mealsRef = mDatabase.child("meals").child(userId);
+        DatabaseReference memosRef = mDatabase.child("UserMemos").child(userId);
+
+        // 리스트 초기화
+        menuList.clear();
+
+        // 비동기 요청을 위한 CountDownLatch
+        CountDownLatch latch = new CountDownLatch(2);
+
+        // meals 데이터 가져오기
+        mealsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                menuList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     ImagePredict imagePredict = snapshot.getValue(ImagePredict.class);
                     if (imagePredict != null && imagePredict.getDateTime().contains(selectedDate)) {
                         menuList.add(imagePredict);
                     }
                 }
-                menuAdapter.notifyDataSetChanged();
-
-                // 데이터가 비어있을 때 메뉴가 없음을 표시
-                if (menuList.isEmpty()) {
-                    emptyMenuTextView.setVisibility(View.VISIBLE);
-                } else {
-                    emptyMenuTextView.setVisibility(View.GONE);
-                }
+                latch.countDown();  // 비동기 요청 완료
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getActivity(), "메뉴를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show();
+                latch.countDown();  // 비동기 요청 실패
             }
         });
-    }
 
+        // UserMemos 데이터 가져오기
+        memosRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // 직접 데이터베이스에서 값을 가져와서 대입
+                    String date = snapshot.child("date").getValue(String.class);
+                    String bloodSugar = snapshot.child("bloodSugar").getValue(String.class);
+                    String memo = snapshot.child("memo").getValue(String.class);
+                    String realTime = snapshot.child("realTime").getValue(String.class);
+
+                    if (bloodSugar != null && memo != null && realTime != null) {
+                        UserMemos userMemos = new UserMemos(date, bloodSugar, memo, realTime);
+                        if (userMemos.getRealTime().contains(selectedDate)) {
+                            // UserMemos의 데이터 중에서 시간을 비교하여 선택된 날짜의 데이터를 가져옴
+                            menuList.add(userMemos); // 메뉴 리스트에 추가
+                        }
+                    }
+                }
+                latch.countDown();  // 비동기 요청 완료
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                latch.countDown();  // 비동기 요청 실패
+            }
+        });
+
+        // 데이터를 모두 가져온 후 처리
+        new Thread(() -> {
+            try {
+                latch.await();  // 모든 비동기 요청이 완료될 때까지 대기
+
+                // 시간 순서대로 정렬
+                Collections.sort(menuList, new Comparator<ImagePredict>() {
+                    @Override
+                    public int compare(ImagePredict o1, ImagePredict o2) {
+                        return o1.getDateTime().compareTo(o2.getDateTime());
+                    }
+                });
+
+                // UI 스레드에서 UI 업데이트
+                Activity activity = getActivity(); // Fragment에서 호출하는 경우
+                if (activity != null) {
+                    activity.runOnUiThread(() -> {
+                        menuAdapter.notifyDataSetChanged();
+
+                        // 데이터가 비어있을 때 메뉴가 없음을 표시
+                        if (menuList.isEmpty()) {
+                            emptyMenuTextView.setVisibility(View.VISIBLE);
+                        } else {
+                            emptyMenuTextView.setVisibility(View.GONE);
+                        }
+                    });
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
 }
