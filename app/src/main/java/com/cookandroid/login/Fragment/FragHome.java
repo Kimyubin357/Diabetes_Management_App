@@ -1,15 +1,20 @@
 package com.cookandroid.login.Fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.cookandroid.login.AlarmActivity;
+import com.cookandroid.login.DetailActivity;
 import com.cookandroid.login.R;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
@@ -25,7 +31,6 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,10 +41,17 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.InputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -55,13 +67,124 @@ public class FragHome extends Fragment {
     private FloatingActionButton buttonAlarm;
     private Button buttonPreviousDate, buttonNextDate;
     private TextView tvCurrentDate;
-
+    private TextView detail1, detail2;
+    private TextView name1, name2;
+    private TextView time1, time2;
+    private TextView kcal1, kcal2;
+    private ImageView imageView1, imageView2;
     private String TAG = "프래그먼트";
     LineChart lineChart;
     private DatabaseReference mDatabaseRef;
     private FirebaseAuth mAuth;
     private Calendar currentCalendarDate; // 홈에서 선택한 날짜
+    private List<String> getImageFilePaths() {
+        List<String> imagePaths = new ArrayList<>();
+//        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
+        if (storageDir != null && storageDir.isDirectory()) {
+            File[] files = storageDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile() && file.getName().endsWith(".jpg")) {
+//                        Log.i("TAG", file.getAbsolutePath());
+                        imagePaths.add(file.getAbsolutePath());
+                    }
+                }
+            }
+        } else {
+            Log.e("TAG", "Directory not found: " + storageDir);
+        }
+
+        // 마지막 두 개의 경로만 반환 -> 최신 파일 두개
+        int size = imagePaths.size();
+        List<String> lastTwoPaths = imagePaths.subList(size - 2, size);
+        for (String path : lastTwoPaths) {
+            Log.i("TAG","START");
+            Log.i("TAG", path);
+        }
+        if (imagePaths.size() > 2) {
+            return lastTwoPaths;
+        } else {
+            return imagePaths;
+        }
+
+    }
+    private static String extractWordAtPosition(String fileName, int position) {
+        // 파일 이름을 언더스코어로 분리
+        String[] parts = fileName.split("_");
+
+        // 주어진 위치에 단어가 존재하면 반환, 그렇지 않으면 빈 문자열 반환
+        if (position >= 0 && position < parts.length) {
+            return parts[position];
+        } else {
+            return "";
+        }
+    }
+
+    private Bitmap loadImageFromFile(String imagePath) {
+        Bitmap bitmap = null;
+        try {
+            File imageFile = new File(imagePath);
+            if (imageFile.exists()) {
+                bitmap = BitmapFactory.decodeFile(imagePath);
+            } else {
+                Log.e("TAG", "Image file not found: " + imagePath);
+            }
+        } catch (Exception e) {
+            Log.e("TAG", "Error loading image: " + e.getMessage());
+        }
+        return bitmap;
+    }
+    private String getImageName(String imagePath){
+        return imagePath.substring(imagePath.lastIndexOf('/') + 1);
+    }
+    public static String convertTimeFormat(String time) {
+        // Define the input and output date formats
+        SimpleDateFormat inputFormat = new SimpleDateFormat("HHmmss", Locale.getDefault());
+        SimpleDateFormat outputFormat = new SimpleDateFormat("a hh:mm", Locale.getDefault());
+
+        try {
+            // Parse the input time string to a Date object
+            Date date = inputFormat.parse(time);
+
+            // Format the Date object to the desired output string
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public static String loadJSONFromAsset(Context context, String fileName) {
+        String json = null;
+        try {
+            InputStream is = context.getAssets().open(fileName);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return json;
+    }
+
+    public static double convertKcal(Context context, String imageName) throws JSONException {
+    // food 상세 정보 mapping
+    String jsonData = loadJSONFromAsset(context, "label_mapping_nutrition.json");
+    JSONObject jsonObject = new JSONObject(jsonData);
+        Double value;
+    try{
+        JSONObject foodData = jsonObject.getJSONObject(imageName);
+        value = foodData.getDouble("cal");
+        Log.i("TAG",imageName+value);
+    }catch (Exception ex){
+        ex.printStackTrace();
+        value =0.0;
+    }
+    return value;
+}
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -73,6 +196,89 @@ public class FragHome extends Fragment {
         buttonPreviousDate = view.findViewById(R.id.button_previous_date);
         buttonNextDate = view.findViewById(R.id.button_next_date);
         tvCurrentDate = view.findViewById(R.id.tv_current_date);
+
+        imageView1 = view.findViewById(R.id.americano_img); // Select imageView
+        imageView2 = view.findViewById(R.id.chocolate_milk_img);
+
+        detail1 = view.findViewById(R.id.americano_detail);
+        detail2 = view.findViewById(R.id.chocolate_milk_detail);
+
+        name1 = view.findViewById(R.id.americano);
+        name2 = view.findViewById(R.id.chocolate_milk);
+
+        time1 = view.findViewById(R.id.americano_eating_time);
+        time2 = view.findViewById(R.id.chocolate_milk_eating_time);
+
+        kcal1 = view.findViewById(R.id.americano_kcal);
+        kcal2 = view.findViewById(R.id.chocolate_milk_kcal);
+
+
+        List<String> imageList = getImageFilePaths(); // local image 파일들 다 불러오기
+
+//            String imagePath = "/storage/emulated/0/Android/data/com.cookandroid.login/files/Pictures/JPEG_20240606_201354_8743862467459105438.jpg";
+//            Bitmap bitmap = loadImageFromFile(imagePath); // imageview안에 load image
+
+        // 파일 이름 부분만 추출
+        String imageName1 = getImageName(imageList.get(0));
+        String imageName2 = getImageName(imageList.get(1));
+
+        // 언더스코어로 분리하여 특정 위치의 단어 추출
+        String imageTime1 = extractWordAtPosition(imageName1, 2);
+        imageTime1 = convertTimeFormat(imageTime1);
+        String extractedWord1 = extractWordAtPosition(imageName1, 3);
+
+        String imageTime2 = extractWordAtPosition(imageName2, 2);
+        imageTime2 = convertTimeFormat(imageTime2);
+        String extractedWord2 = extractWordAtPosition(imageName2, 3);
+
+        // 결과 표시
+        Bitmap bitmap = loadImageFromFile(imageList.get(0)); // imageView안에 load image
+        imageView1.setImageBitmap(bitmap); // image1 set
+        Bitmap bitmap2 = loadImageFromFile(imageList.get(1)); // imageView안에 load image
+        imageView2.setImageBitmap(bitmap2); // image2 set
+
+        name1.setText(extractedWord1);
+        name2.setText(extractedWord2);
+        time1.setText(imageTime1);
+        time2.setText(imageTime2);
+        try {
+            Double Kcal1 = convertKcal(getContext(),extractedWord1);
+            Double Kcal2 = convertKcal(getContext(),extractedWord2);
+
+            kcal1.setText(Kcal1 +"kcal");
+            kcal2.setText(Kcal2 +"kcal");
+
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        // 공통 ClickListener 생성
+        View.OnClickListener detailClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), DetailActivity.class);
+
+                int id = v.getId();
+                if (id == R.id.americano_detail) {
+                    intent.putExtra("foodName", extractedWord1); // detail1에 대한 값 설정
+                    String imagePath1 = imageList.get(0); // 이미지 경로 가져오기
+                    intent.putExtra("imageUri", imagePath1); // detail1에 대한 imageUri 설정
+                } else if (id == R.id.chocolate_milk_detail) {
+                    intent.putExtra("foodName", extractedWord2); // detail2에 대한 값 설정
+                    String imagePath2 = imageList.get(1); // 이미지 경로 가져오기
+                    intent.putExtra("imageUri", imagePath2); // detail2에 대한 imageUri 설정
+                }
+
+                startActivity(intent);
+            }
+        };
+
+
+        // ClickListener를 detail1과 detail2에 설정
+        detail1.setOnClickListener(detailClickListener);
+        detail2.setOnClickListener(detailClickListener);
+
+
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
@@ -265,22 +471,3 @@ public class FragHome extends Fragment {
     }
 }
 
-
-
-//                xAxis.setAxisMaximum(labels.length - 1f); // x축 최대값 설정
-//                xAxis.setLabelCount(3); // 레이블 개수 설정
-//                String[] labels = new String[dataSize];
-//                xAxis.setValueFormatter(new IndexAxisValueFormatter()); // 레이블 포맷터 설정
-
-
-//                xAxis.setValueFormatter(new ValueFormatter() {
-//                    @Override
-//                    public String getAxisLabel(float value, AxisBase axis) {
-//                        int index = (int) value;
-//                        if (index >= 0 && index < 10) {
-//                            return labels[index];
-//                        } else {
-//                            return "";
-//                        }
-//                    }
-//                });
