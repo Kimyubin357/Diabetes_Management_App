@@ -1,6 +1,7 @@
 package com.cookandroid.login.Fragment;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,13 +16,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.cookandroid.login.MainActivity;
 import com.cookandroid.login.ModifyActivity;
 import com.cookandroid.login.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -91,6 +95,54 @@ public class FragHotel extends Fragment {
 
         save = (Button) view.findViewById(R.id.save);//버튼 연결
 
+        logout = view.findViewById(R.id.logout);//로그아웃 버튼 연결
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getContext(), "로그아웃 완료.", Toast.LENGTH_SHORT).show();
+                mAuth.signOut();
+
+                Intent intent = new Intent(getContext(), MainActivity.class);//로그아웃 이후 메인으로 이동해서 메인이 로그인 여부 검증하고 자동으로 로그인 액티비티 켜줄꺼임 아마?
+                startActivity(intent);
+            }
+        });
+        member_out = view.findViewById(R.id.member_out);//회원탈퇴 버튼 연결
+        member_out.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());//현재 액티비티 명
+                dlg.setTitle("정말 탈퇴하시겠습니까?");
+                dlg.setMessage("탈퇴를 하시면 그동안 애써 기록한 모든 내용이 삭제되어 복구되지 않아요. 정말 탈퇴하시겠어요?");
+                dlg.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        String userid = mAuth.getCurrentUser().getUid();//user의 Id를 string에 저장
+                        Log.i("Tag", "First" + userid);
+                        mAuth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {//auth에 현재 사용자를 삭제
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                mDatabaseRef.removeValue().addOnCompleteListener(tasks -> {
+                                    if (tasks.isSuccessful()) {
+                                        Log.i("tag", "Success");
+                                        //user Id
+                                        Toast.makeText(getContext(), "정상적으로 탈퇴되었습니다.", Toast.LENGTH_SHORT).show();
+
+                                        Intent intent = new Intent(getContext(), MainActivity.class);
+                                        startActivity(intent);
+                                    } else {
+                                        Log.i("tag", "Fail");
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+                dlg.setNegativeButton("취소", null);
+                dlg.show();
+            }
+        });
+
         TextBirthday.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -159,4 +211,5 @@ public class FragHotel extends Fragment {
         });
         return view; // onCreateView 메서드에서 뷰 반환
     }
+
 }
