@@ -170,19 +170,19 @@ public class FragHome extends Fragment {
 
                 // x축 레이블 설정
                 int dataSize = dataList.size();
-                String[] labels = new String[]{"공복", "아침 식전", "아침 식후", "점심 식전", "점심 식후", "저녁 식전", "저녁 식후", "자기 전"};
+//                String[] labels = new String[]{"공복", "아침 식전", "아침 식후", "점심 식전", "점심 식후", "저녁 식전", "저녁 식후", "자기 전"};
 
-                String[] labels2 = new String[dataSize];
-                for (int i = 0; i < dataSize; i++) {
-                    Entry temp = dataList.get(i);
-                    Log.i("TAG", labels[(int) temp.getX()]);
-                    labels2[i] = labels[(int) temp.getX()];
-                }
-                Log.i("TAG", labels2.toString());
-                Log.i("TAG", dataList.toString());
+//                String[] labels2 = new String[dataSize];
+//                for (int i = 0; i < dataSize; i++) {
+//                    Entry temp = dataList.get(i);
+//                    Log.i("TAG", labels[(int) temp.getX()]);
+//                    labels2[i] = labels[(int) temp.getX()];
+//                }
+//                Log.i("TAG", labels2.toString());
+//                Log.i("TAG", dataList.toString());
                 xAxis.setAxisMinimum(0f);  // x축 최소값 설정
                 xAxis.setLabelCount(dataSize); // 레이블 개수 설정
-                xAxis.setValueFormatter(new IndexAxisValueFormatter(labels2));
+//                xAxis.setValueFormatter(new IndexAxisValueFormatter(labels2));
 
                 lineChart.setDrawGridBackground(false); // 그리드 배경 비활성화
                 lineChart.setDrawBorders(false); // 차트 경계선 비활성화
