@@ -114,10 +114,12 @@ public class FragHome extends Fragment {
     }
 
     private void updateDisplayedDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd", Locale.KOREA);
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd", Locale.KOREA);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREA);
+        SimpleDateFormat sdf = new SimpleDateFormat("yy.MM.dd(E)", Locale.KOREA);
         String formattedDate = sdf.format(currentCalendarDate.getTime());
         tvCurrentDate.setText(formattedDate);
-        fetchDataAndDisplay(formattedDate);
+        fetchDataAndDisplay(dateFormat.format(currentCalendarDate.getTime()));
     }
 
     private void changeDate(int days) {
@@ -192,6 +194,8 @@ public class FragHome extends Fragment {
 
     // 데이터 생성
     private ArrayList<Entry> data1(String clickDate, DataCallback callback) {
+        Log.i("TAG","CLICK");
+        Log.i("TAG",clickDate);
         ArrayList<Entry> dataList = new ArrayList<>();
 
         // DB에서 해당 날짜 Data 가져오기
