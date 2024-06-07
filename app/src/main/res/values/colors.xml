@@ -14,4 +14,5 @@
     <color name="circle_color">#E8241C</color> <!-- 데이터 포인트 색상 -->
     <color name="chart_description_color">#000000</color> <!-- 차트 설명 색상 -->
     <color name="legend_text_color">#000000</color> <!-- 범례 텍스트 색상 -->
+    <color name="red_red_red">#DC0716</color> <!-- 홈에서 -->
 </resources>
