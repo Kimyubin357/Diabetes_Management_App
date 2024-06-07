@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,16 +6,52 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/day_time_chart"
-        android:layout_width="match_parent"
-        android:layout_height="320dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="30dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_whitebar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_whitebar2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.065" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_whitebar2.5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.0675" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_whitebar3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.03" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_whitebar4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.15" />
+
+    <!-- Background Image -->
+    <ImageView
+        android:id="@+id/background_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/half_red"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline_whitebar"/>
 
     <!-- Floating Action Button for Alarm -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -35,5 +70,100 @@
         app:fabSize="normal"
         app:maxImageSize="40dp"/>
 
+    <ImageView
+        android:id="@+id/home_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitStart"
+        android:src="@drawable/drop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline_whitebar3"
+        app:layout_constraintTop_toTopOf="@id/guideline_whitebar2"
+        app:layout_constraintDimensionRatio="8" />
+
+    <TextView
+        android:id="@+id/et_id_top"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="혈당 관리 App"
+        android:textColor="@android:color/black"
+        android:textSize="27sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="35dp"
+        android:padding="0dp"
+        app:layout_constraintStart_toEndOf="@+id/guideline_whitebar4"
+        app:layout_constraintTop_toTopOf="@id/guideline_whitebar2.5"
+        android:layout_marginTop="6dp"/>
+
+    <android.widget.Button
+        android:id="@+id/button_previous_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/tv_current_date"
+        android:text="&lt;"
+        android:textStyle="bold"
+        android:background="#00ff0000"
+        android:elevation="0dp"
+        app:layout_constraintStart_toStartOf="@+id/graph"
+        app:layout_constraintBottom_toTopOf="@+id/graph"
+        app:layout_constraintTop_toTopOf="@id/tv_current_date"/>
+
+    <android.widget.TextView
+        android:id="@+id/tv_current_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:text="오늘 날짜"
+
+        android:textStyle="bold"
+
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/graph"/>
+
+    <android.widget.Button
+        android:id="@+id/button_next_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/tv_current_date"
+        android:text="&gt;"
+        android:textStyle="bold"
+        android:background="#00ff0000"
+        app:layout_constraintEnd_toEndOf="@+id/graph"
+        app:layout_constraintTop_toTopOf="@id/tv_current_date"
+        app:layout_constraintBottom_toTopOf="@+id/graph"/>
+
+    <FrameLayout
+        android:id="@+id/graph"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="95dp"
+        app:layout_constraintTop_toBottomOf="@id/guideline_whitebar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/cardview_border">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="40dp"
+            app:cardBackgroundColor="@color/white"
+            android:layout_margin="2dp"> <!-- 테두리와의 간격을 주기 위한 margin 설정 -->
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/day_time_chart"
+                android:layout_width="match_parent"
+                android:layout_height="299dp"
+                android:padding="16dp"
+                android:layout_gravity="center"/>
+        </androidx.cardview.widget.CardView>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

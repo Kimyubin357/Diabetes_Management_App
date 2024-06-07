@@ -84,7 +84,40 @@ public class MainActivity extends AppCompatActivity {
     Fragment fragment_hotel;
 
 
+    private Bitmap loadImageFromFile(String imagePath) {
+        Bitmap bitmap = null;
+        try {
+            File imageFile = new File(imagePath);
+            if (imageFile.exists()) {
+                bitmap = BitmapFactory.decodeFile(imagePath);
+            } else {
+                Log.e("TAG", "Image file not found: " + imagePath);
+            }
+        } catch (Exception e) {
+            Log.e("TAG", "Error loading image: " + e.getMessage());
+        }
+        return bitmap;
+    }
 
+
+    private List<String> getImageFilePaths() {
+        List<String> imagePaths = new ArrayList<>();
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if (storageDir != null && storageDir.isDirectory()) {
+            File[] files = storageDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile() && file.getName().endsWith(".jpg")) {
+                        Log.i("TAG", file.getAbsolutePath());
+                        imagePaths.add(file.getAbsolutePath());
+                    }
+                }
+            }
+        } else {
+            Log.e("TAG", "Directory not found: " + storageDir);
+        }
+        return imagePaths;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,7 +180,27 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
             });
+///////////////  최근 상세 정보들  ///////////////
+            getImageFilePaths(); // local image 파일들 다 불러오기
+            ImageView imageView = findViewById(R.id.imgview); // Select imageView
+            String imagePath = "/storage/emulated/0/Android/data/com.cookandroid.login/files/Pictures/JPEG_20240606_201354_8743862467459105438.jpg";
+            Bitmap bitmap = loadImageFromFile(imagePath); // imageview안에 load image
+            /// onclick 할 때
+//            Intent intent = new Intent(MainActivity.this, DetailActivity.class); // intent 생성
+//            // 정보 저장
+//            intent.putExtra("foodName", foodName); // foodName 전달
+//            intent.putExtra("imageUri", imageUri.toString()); // imageUri (image path)도 전달
+//
+//            // ResultActivity 시작
+//            startActivity(intent);
 
+            ///////////////  최근 상세 정보들 누르면 상세 정보 activity로 이동하게  ///////////////
+
+            if (bitmap != null) {
+//                imageView.setImageBitmap(bitmap);
+            } else {
+                Log.e("TAG", "Failed to load image");
+            }
             ////////////////////////CAMERA////////////////////////
             PermissionListener permissionListner = new PermissionListener() {
                 @Override
@@ -160,19 +213,20 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "권한이 거부됨", Toast.LENGTH_SHORT).show();
                 }
             };
+            // 권한 창 생성
+            TedPermission.create()
+                    .setPermissionListener(permissionListner)
+                    .setDeniedMessage("거부하셨습니다.")
+                    .setRationaleMessage("카메라 권한이 필요합니다.")
+                    .setPermissions(android.Manifest.permission.CAMERA)
+                    .check();
 
             // floatingActionButton 초기화
             floatingActionButton = findViewById(R.id.main_floating_add_btn);
             floatingActionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // 권한 창 생성
-                    TedPermission.create()
-                            .setPermissionListener(permissionListner)
-                            .setDeniedMessage("거부하셨습니다.")
-                            .setRationaleMessage("카메라 권한이 필요합니다.")
-                            .setPermissions(android.Manifest.permission.CAMERA)
-                            .check();
+
                     Log.i(TAG, "camera success!");
 
                     // 카메라 권한 있는지 확인
