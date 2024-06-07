@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:contentDescription="알람"
-        android:src="@android:drawable/ic_dialog_alert"
+        android:src="@drawable/baseline_alarm_32"
         android:onClick="goToAlarmActivity"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
