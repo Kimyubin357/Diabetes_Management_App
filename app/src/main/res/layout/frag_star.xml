@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="125dp"
+    android:fillViewport="true"
+    tools:context=".ModifyActivity">
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -194,3 +201,4 @@
             android:layout_marginStart="16dp"/>
     </LinearLayout>
 </RelativeLayout>
+</ScrollView>
