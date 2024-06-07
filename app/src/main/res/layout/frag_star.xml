@@ -126,7 +126,7 @@
         android:layout_below="@id/linearLayoutdate"
         android:id="@+id/linearLayoutNumberPicker"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="110dp"
         android:orientation="horizontal"
         android:gravity="center">
 
@@ -167,12 +167,12 @@
         <EditText
             android:id="@+id/et_Memo"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="150dp"
             android:padding="16dp"
             android:background="@drawable/edittext_bg"
             android:hint="혈당과 관련된 내용을 자유롭게 메모하세요."
             android:textSize="18sp"
-            android:layout_margin="15dp"/>
+            android:layout_margin="10dp"/>
     </LinearLayout>
 
     <!-- Bottom section with save and cancel buttons -->
