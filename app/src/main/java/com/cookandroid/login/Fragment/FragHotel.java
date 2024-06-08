@@ -20,8 +20,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.cookandroid.login.MainActivity;
-import com.cookandroid.login.ModifyActivity;
 import com.cookandroid.login.R;
+import com.cookandroid.login.email_modify_Activity;
+import com.cookandroid.login.password_modify_Activity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -50,6 +51,8 @@ public class FragHotel extends Fragment {
     private Button save;
 
     private RadioButton Male, Female;
+
+    private Button email_chan, pass_chan;
 
     private String TAG = "프래그먼트";
 
@@ -93,9 +96,30 @@ public class FragHotel extends Fragment {
         Male = view.findViewById(R.id.radioButtonMale);
         Female = view.findViewById(R.id.radioButtonFemale);
 
+
         save = (Button) view.findViewById(R.id.save);//버튼 연결
 
         logout = view.findViewById(R.id.logout);//로그아웃 버튼 연결
+
+        email_chan = (Button) view.findViewById(R.id.email_chan);
+        pass_chan = (Button) view.findViewById(R.id.pass_chan);
+
+        email_chan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), email_modify_Activity.class);
+                startActivity(intent);
+            }
+        });
+        pass_chan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), password_modify_Activity.class);
+                startActivity(intent);
+            }
+        });
+
+
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

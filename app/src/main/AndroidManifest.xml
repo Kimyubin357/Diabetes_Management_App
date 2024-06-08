@@ -16,6 +16,12 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="true"
         android:appComponentFactory="whateverString"
@@ -29,6 +35,12 @@
         tools:replace="android:appComponentFactory"
         tools:targetApi="31">
         <activity
+            android:name=".email_modify_Activity"
+            android:exported="false" />
+        <activity
+            android:name=".password_modify_Activity"
+            android:exported="false" />
+        <activity
             android:name=".ModifyActivity"
             android:exported="true" />
         <activity
@@ -36,14 +48,13 @@
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:exported="true"></activity>
-
+            android:exported="true" />
         <activity
             android:name=".ResultActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".DetailActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -68,7 +79,6 @@
 
         <receiver android:name=".AlarmReceiver" />
 
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.cookandroid.login"
@@ -79,11 +89,5 @@
                 android:resource="@xml/camera" />
         </provider>
     </application>
-
-    <queries>
-        <intent>
-            <action android:name="android.media.action.IMAGE_CAPTURE" />
-        </intent>
-    </queries>
 
 </manifest>
