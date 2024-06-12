@@ -34,7 +34,18 @@
         android:theme="@style/Theme.Login"
         tools:replace="android:appComponentFactory"
         tools:targetApi="31">
-
+        <activity
+            android:name=".find_email_Activity"
+            android:exported="false" />
+        <activity
+            android:name=".find_password_Activity"
+            android:exported="false" />
+        <activity
+            android:name=".email_modify_Activity"
+            android:exported="false" />
+        <activity
+            android:name=".password_modify_Activity"
+            android:exported="false" />
         <activity
             android:name=".ModifyActivity"
             android:exported="true" />
@@ -46,6 +57,9 @@
             android:exported="true" />
         <activity
             android:name=".ResultActivity"
+            android:exported="true" />
+        <activity
+            android:name=".DetailActivity"
             android:exported="true" />
         <activity
             android:name=".MainActivity"

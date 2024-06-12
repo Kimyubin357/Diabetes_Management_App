@@ -61,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -83,41 +84,6 @@ public class MainActivity extends AppCompatActivity {
     Fragment fragment_group;
     Fragment fragment_hotel;
 
-
-    private Bitmap loadImageFromFile(String imagePath) {
-        Bitmap bitmap = null;
-        try {
-            File imageFile = new File(imagePath);
-            if (imageFile.exists()) {
-                bitmap = BitmapFactory.decodeFile(imagePath);
-            } else {
-                Log.e("TAG", "Image file not found: " + imagePath);
-            }
-        } catch (Exception e) {
-            Log.e("TAG", "Error loading image: " + e.getMessage());
-        }
-        return bitmap;
-    }
-
-
-    private List<String> getImageFilePaths() {
-        List<String> imagePaths = new ArrayList<>();
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        if (storageDir != null && storageDir.isDirectory()) {
-            File[] files = storageDir.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isFile() && file.getName().endsWith(".jpg")) {
-                        Log.i("TAG", file.getAbsolutePath());
-                        imagePaths.add(file.getAbsolutePath());
-                    }
-                }
-            }
-        } else {
-            Log.e("TAG", "Directory not found: " + storageDir);
-        }
-        return imagePaths;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,27 +146,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
             });
-///////////////  최근 상세 정보들  ///////////////
-            getImageFilePaths(); // local image 파일들 다 불러오기
-            ImageView imageView = findViewById(R.id.imgview); // Select imageView
-            String imagePath = "/storage/emulated/0/Android/data/com.cookandroid.login/files/Pictures/JPEG_20240606_201354_8743862467459105438.jpg";
-            Bitmap bitmap = loadImageFromFile(imagePath); // imageview안에 load image
-            /// onclick 할 때
-//            Intent intent = new Intent(MainActivity.this, DetailActivity.class); // intent 생성
-//            // 정보 저장
-//            intent.putExtra("foodName", foodName); // foodName 전달
-//            intent.putExtra("imageUri", imageUri.toString()); // imageUri (image path)도 전달
-//
-//            // ResultActivity 시작
-//            startActivity(intent);
 
-            ///////////////  최근 상세 정보들 누르면 상세 정보 activity로 이동하게  ///////////////
-
-            if (bitmap != null) {
-//                imageView.setImageBitmap(bitmap);
-            } else {
-                Log.e("TAG", "Failed to load image");
-            }
             ////////////////////////CAMERA////////////////////////
             PermissionListener permissionListner = new PermissionListener() {
                 @Override
@@ -261,17 +207,17 @@ public class MainActivity extends AppCompatActivity {
                     File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                     File image = File.createTempFile(
                             imageFileName,
-                            ".jpg",
+                            ".png",
                             storageDir
                     );
                     imageFilePath = image.getAbsolutePath();
-                    Log.i(Tag,imageFilePath);
+//                    Log.i(Tag,imageFilePath);
                     return image;
                 }
-                private Uri saveImageToFile(Bitmap bitmap) throws IOException {
+                private Uri saveImageToFile(Bitmap bitmap, String imageName) throws IOException {
                     // 파일 이름 생성
                     String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                    String imageFileName = "JPEG_" + timeStamp + "_";
+                    String imageFileName = "JPEG_" + timeStamp + "_"+ imageName + "_";
                     File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                     File imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
 
@@ -334,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     try {
                                         // Bitmap을 파일로 저장하고 URI를 얻음
-                                        Uri imageUri = saveImageToFile(bitmap2);
+                                        Uri imageUri = saveImageToFile(bitmap2, foodName);
 
                                         // ResultActivity 시작
                                         Intent intent = new Intent(MainActivity.this, ResultActivity.class);
@@ -413,12 +359,8 @@ public class MainActivity extends AppCompatActivity {
                     // Perform inference
                     Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
                     Log.i(TAG, "Model input success");
-
                     // Convert tensor to Java array
                     float[] scores = outputTensor.getDataAsFloatArray();
-                    Log.i("TAG", Arrays.toString(scores));
-                    Log.i("TAG", "Scores length: " + scores.length);
-
                     // Find the index with the highest score
                     int maxIndex = 0;
                     float maxScore = scores[0];
@@ -433,13 +375,8 @@ public class MainActivity extends AppCompatActivity {
                     // Get label data and show the prediction result
                     List<String> foodList = getLabelData();
                     Log.i("TAG", "[Predict]: " + foodList.get(maxIndex));
-                    Toast.makeText(getApplicationContext(), "[Predict]: " + foodList.get(maxIndex), Toast.LENGTH_SHORT).show();
                     return foodList.get(maxIndex);
                 }
-                /// image predict to db
-
-
-
             });
 
         }

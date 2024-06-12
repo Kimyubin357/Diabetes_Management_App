@@ -3,7 +3,9 @@ package com.cookandroid.login;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,16 +16,16 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private SharedPreferences sharedPreferences;
 
     private EditText mEt_id, mEt_pwd;
-    private Button mEt_login, mEt_signup;
+    private Button mEt_login, mEt_signup, mEt_findId, mEt_findPass;
 
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +37,9 @@ public class LoginActivity extends AppCompatActivity {
         mEt_pwd = findViewById(R.id.et_password);
         mEt_signup = findViewById(R.id.btn_signup);
         mEt_login = findViewById(R.id.btn_login);
+        mEt_findId = findViewById(R.id.btn_find_id);
+        mEt_findPass = findViewById(R.id.btn_find_password);
+
 
 
         mEt_login.setOnClickListener(new View.OnClickListener() {
@@ -53,6 +58,10 @@ public class LoginActivity extends AppCompatActivity {
 
                             if (task.isSuccessful()){
                                 //로그인 성공
+                                SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("last_logged_in_email", str_email);
+                                editor.apply();
                                 Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                                 startActivity(intent);
                                 finish();
@@ -68,6 +77,21 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
+        mEt_findId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, find_email_Activity.class);
+                startActivity(intent);
+            }
+        });
+
+        mEt_findPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, find_password_Activity.class);
                 startActivity(intent);
             }
         });
