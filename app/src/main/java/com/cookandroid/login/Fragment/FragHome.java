@@ -98,16 +98,20 @@ public class FragHome extends Fragment {
 
         // 마지막 두 개의 경로만 반환 -> 최신 파일 두개
         int size = imagePaths.size();
-        List<String> lastTwoPaths = imagePaths.subList(size - 2, size);
+        List<String> lastTwoPaths = new ArrayList<>();
+
+        if (size >= 2) {
+            lastTwoPaths = imagePaths.subList(size - 2, size);
+        } else {
+            lastTwoPaths = new ArrayList<>(imagePaths);
+        }
+
         for (String path : lastTwoPaths) {
             Log.i("TAG","START");
             Log.i("TAG", path);
         }
-        if (imagePaths.size() > 2) {
-            return lastTwoPaths;
-        } else {
-            return imagePaths;
-        }
+
+        return lastTwoPaths;
 
     }
     private static String extractWordAtPosition(String fileName, int position) {
@@ -213,71 +217,153 @@ public class FragHome extends Fragment {
         kcal2 = view.findViewById(R.id.chocolate_milk_kcal);
 
 
+//        List<String> imageList = getImageFilePaths(); // local image 파일들 다 불러오기
+//
+////            String imagePath = "/storage/emulated/0/Android/data/com.cookandroid.login/files/Pictures/JPEG_20240606_201354_8743862467459105438.jpg";
+////            Bitmap bitmap = loadImageFromFile(imagePath); // imageview안에 load image
+//
+//        // 파일 이름 부분만 추출
+//        String imageName1 = getImageName(imageList.get(0));
+//        String imageName2 = getImageName(imageList.get(1));
+//
+//        // 언더스코어로 분리하여 특정 위치의 단어 추출
+//        String imageTime1 = extractWordAtPosition(imageName1, 2);
+//        imageTime1 = convertTimeFormat(imageTime1);
+//        String extractedWord1 = extractWordAtPosition(imageName1, 3);
+//
+//        String imageTime2 = extractWordAtPosition(imageName2, 2);
+//        imageTime2 = convertTimeFormat(imageTime2);
+//        String extractedWord2 = extractWordAtPosition(imageName2, 3);
+//
+//        // 결과 표시
+//        Bitmap bitmap = loadImageFromFile(imageList.get(0)); // imageView안에 load image
+//        imageView1.setImageBitmap(bitmap); // image1 set
+//        Bitmap bitmap2 = loadImageFromFile(imageList.get(1)); // imageView안에 load image
+//        imageView2.setImageBitmap(bitmap2); // image2 set
+//
+//        name1.setText(extractedWord1);
+//        name2.setText(extractedWord2);
+//        time1.setText(imageTime1);
+//        time2.setText(imageTime2);
+//        try {
+//            Double Kcal1 = convertKcal(getContext(),extractedWord1);
+//            Double Kcal2 = convertKcal(getContext(),extractedWord2);
+//
+//            kcal1.setText(Kcal1 +"kcal");
+//            kcal2.setText(Kcal2 +"kcal");
+//
+//        } catch (JSONException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        // 공통 ClickListener 생성
+//        View.OnClickListener detailClickListener = new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getContext(), DetailActivity.class);
+//
+//                int id = v.getId();
+//                if (id == R.id.americano_detail) {
+//                    intent.putExtra("foodName", extractedWord1); // detail1에 대한 값 설정
+//                    String imagePath1 = imageList.get(0); // 이미지 경로 가져오기
+//                    intent.putExtra("imageUri", imagePath1); // detail1에 대한 imageUri 설정
+//                } else if (id == R.id.chocolate_milk_detail) {
+//                    intent.putExtra("foodName", extractedWord2); // detail2에 대한 값 설정
+//                    String imagePath2 = imageList.get(1); // 이미지 경로 가져오기
+//                    intent.putExtra("imageUri", imagePath2); // detail2에 대한 imageUri 설정
+//                }
+//
+//                startActivity(intent);
+//            }
+//        };
+//
+//
+//        // ClickListener를 detail1과 detail2에 설정
+//        detail1.setOnClickListener(detailClickListener);
+//        detail2.setOnClickListener(detailClickListener);
         List<String> imageList = getImageFilePaths(); // local image 파일들 다 불러오기
 
-//            String imagePath = "/storage/emulated/0/Android/data/com.cookandroid.login/files/Pictures/JPEG_20240606_201354_8743862467459105438.jpg";
-//            Bitmap bitmap = loadImageFromFile(imagePath); // imageview안에 load image
+        if (imageList.isEmpty()) {
+            Log.e("TAG", "No images found");
+            // 적절한 대처: 예를 들어, UI에 에러 메시지를 표시하거나 기본 이미지를 설정
+            name1.setText("No Image");
+            name2.setText("No Image");
+            time1.setText("-");
+            time2.setText("-");
+            kcal1.setText("-");
+            kcal2.setText("-");
+        } else {
+            // imageList에 최소 2개의 이미지가 있는지 확인
+            if (imageList.size() < 2) {
+                Log.e("TAG", "Not enough images found");
+                // 적절한 대처: 예를 들어, 첫 번째 이미지만 표시하고 두 번째는 기본 이미지로 설정
+                name1.setText("No Image");
+                name2.setText("No Image");
+                time1.setText("-");
+                time2.setText("-");
+                kcal1.setText("-");
+                kcal2.setText("-");
+            } else {
+                // 파일 이름 부분만 추출
+                String imageName1 = getImageName(imageList.get(0));
+                String imageName2 = getImageName(imageList.get(1));
 
-        // 파일 이름 부분만 추출
-        String imageName1 = getImageName(imageList.get(0));
-        String imageName2 = getImageName(imageList.get(1));
+                // 언더스코어로 분리하여 특정 위치의 단어 추출
+                String imageTime1 = extractWordAtPosition(imageName1, 2);
+                imageTime1 = convertTimeFormat(imageTime1);
+                String extractedWord1 = extractWordAtPosition(imageName1, 3);
 
-        // 언더스코어로 분리하여 특정 위치의 단어 추출
-        String imageTime1 = extractWordAtPosition(imageName1, 2);
-        imageTime1 = convertTimeFormat(imageTime1);
-        String extractedWord1 = extractWordAtPosition(imageName1, 3);
+                String imageTime2 = extractWordAtPosition(imageName2, 2);
+                imageTime2 = convertTimeFormat(imageTime2);
+                String extractedWord2 = extractWordAtPosition(imageName2, 3);
 
-        String imageTime2 = extractWordAtPosition(imageName2, 2);
-        imageTime2 = convertTimeFormat(imageTime2);
-        String extractedWord2 = extractWordAtPosition(imageName2, 3);
+                // 결과 표시
+                Bitmap bitmap = loadImageFromFile(imageList.get(0)); // imageView안에 load image
+                imageView1.setImageBitmap(bitmap); // image1 set
+                Bitmap bitmap2 = loadImageFromFile(imageList.get(1)); // imageView안에 load image
+                imageView2.setImageBitmap(bitmap2); // image2 set
 
-        // 결과 표시
-        Bitmap bitmap = loadImageFromFile(imageList.get(0)); // imageView안에 load image
-        imageView1.setImageBitmap(bitmap); // image1 set
-        Bitmap bitmap2 = loadImageFromFile(imageList.get(1)); // imageView안에 load image
-        imageView2.setImageBitmap(bitmap2); // image2 set
+                name1.setText(extractedWord1);
+                name2.setText(extractedWord2);
+                time1.setText(imageTime1);
+                time2.setText(imageTime2);
+                try {
+                    Double Kcal1 = convertKcal(getContext(), extractedWord1);
+                    Double Kcal2 = convertKcal(getContext(), extractedWord2);
 
-        name1.setText(extractedWord1);
-        name2.setText(extractedWord2);
-        time1.setText(imageTime1);
-        time2.setText(imageTime2);
-        try {
-            Double Kcal1 = convertKcal(getContext(),extractedWord1);
-            Double Kcal2 = convertKcal(getContext(),extractedWord2);
+                    kcal1.setText(Kcal1 + "kcal");
+                    kcal2.setText(Kcal2 + "kcal");
 
-            kcal1.setText(Kcal1 +"kcal");
-            kcal2.setText(Kcal2 +"kcal");
-
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-
-        // 공통 ClickListener 생성
-        View.OnClickListener detailClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), DetailActivity.class);
-
-                int id = v.getId();
-                if (id == R.id.americano_detail) {
-                    intent.putExtra("foodName", extractedWord1); // detail1에 대한 값 설정
-                    String imagePath1 = imageList.get(0); // 이미지 경로 가져오기
-                    intent.putExtra("imageUri", imagePath1); // detail1에 대한 imageUri 설정
-                } else if (id == R.id.chocolate_milk_detail) {
-                    intent.putExtra("foodName", extractedWord2); // detail2에 대한 값 설정
-                    String imagePath2 = imageList.get(1); // 이미지 경로 가져오기
-                    intent.putExtra("imageUri", imagePath2); // detail2에 대한 imageUri 설정
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
                 }
 
-                startActivity(intent);
+                // 공통 ClickListener 생성
+                View.OnClickListener detailClickListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getContext(), DetailActivity.class);
+
+                        int id = v.getId();
+                        if (id == R.id.americano_detail) {
+                            intent.putExtra("foodName", extractedWord1); // detail1에 대한 값 설정
+                            String imagePath1 = imageList.get(0); // 이미지 경로 가져오기
+                            intent.putExtra("imageUri", imagePath1); // detail1에 대한 imageUri 설정
+                        } else if (id == R.id.chocolate_milk_detail) {
+                            intent.putExtra("foodName", extractedWord2); // detail2에 대한 값 설정
+                            String imagePath2 = imageList.get(1); // 이미지 경로 가져오기
+                            intent.putExtra("imageUri", imagePath2); // detail2에 대한 imageUri 설정
+                        }
+
+                        startActivity(intent);
+                    }
+                };
+
+                // ClickListener를 detail1과 detail2에 설정
+                detail1.setOnClickListener(detailClickListener);
+                detail2.setOnClickListener(detailClickListener);
             }
-        };
-
-
-        // ClickListener를 detail1과 detail2에 설정
-        detail1.setOnClickListener(detailClickListener);
-        detail2.setOnClickListener(detailClickListener);
-
+        }
 
 
         mAuth = FirebaseAuth.getInstance();
