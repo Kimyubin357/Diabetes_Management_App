@@ -168,6 +168,11 @@ public class SetAlarm extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"알림이 설정되었습니다.", Toast.LENGTH_SHORT).show();
 
                     setResult(RESULT_OK);
+
+                    // 메인 액티비티로 이동
+                    Intent mainIntent = new Intent(SetAlarm.this, AlarmActivity.class);
+                    startActivity(mainIntent);
+                    finish(); // 현재 액티비티 종료
                 }
 
             }
