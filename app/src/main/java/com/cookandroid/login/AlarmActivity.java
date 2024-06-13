@@ -146,7 +146,7 @@ public class AlarmActivity extends AppCompatActivity {
             Button btnEdit = view.findViewById(R.id.btnEdit);
             Button btnDelete = view.findViewById(R.id.btnDelete);
 
-            final long id = cursor.getLong(cursor.getColumnIndexOrThrow(Databases.CreateDB._ID));
+            final int id = (int) cursor.getLong(cursor.getColumnIndexOrThrow(Databases.CreateDB._ID));
 
             btnEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
