@@ -15,7 +15,7 @@
     <style name="RoundedFAB" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.FAB.Circular</item>
         <!-- 색상 관련 속성 추가 -->
-        <item name="backgroundTint">@color/our_red</item>
+        <item name="backgroundTint">@color/red_red_red</item>
     </style>
     <!-- NumberPicker 색상 변경 -->
     <style name="Theme.AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
@@ -30,4 +30,8 @@
         <!-- NumberPicker divider color -->
         <item name="colorControlNormal">@color/our_red</item>
     </style>
+
+
+
+
 </resources>
