@@ -121,9 +121,10 @@ public class ModifyAlarm extends AppCompatActivity {
                 setResult(RESULT_OK);
 
                 // 메인 액티비티로 이동
-                Intent mainIntent = new Intent(ModifyAlarm.this, AlarmActivity.class);
-                startActivity(mainIntent);
-                finish(); // 현재 액티비티 종료
+                Intent intent = new Intent(getApplicationContext(), AlarmActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+                finish();
             }
         });
     }

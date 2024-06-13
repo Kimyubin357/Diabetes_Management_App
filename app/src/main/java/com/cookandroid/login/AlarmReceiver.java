@@ -34,7 +34,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_drug_icon)
-                .setContentTitle("약꾹")
+                .setContentTitle("당뇨_솔류션")
                 .setContentText(text + "을(를) 복용할 시간이에요:)")
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setContentIntent(contentIntent)
