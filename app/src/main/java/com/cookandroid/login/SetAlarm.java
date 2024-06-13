@@ -11,6 +11,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -30,6 +32,7 @@ public class SetAlarm extends AppCompatActivity {
     private AlarmManager alarmManager;
     SQLiteDatabase mDb;
     Button regist;
+    Button cancel;
     private int hour, minute;
     public String alarmtime;
     private String text, ampm;
@@ -58,6 +61,12 @@ public class SetAlarm extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.set_alarm);
 
+        // 상태 바 색상 변경
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(R.color.red_red_red));
+        }
 
         timePicker = (TimePicker) findViewById(R.id.timepicker);
         editText = (EditText) findViewById(R.id.editText);
@@ -168,11 +177,25 @@ public class SetAlarm extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"알림이 설정되었습니다.", Toast.LENGTH_SHORT).show();
 
                     setResult(RESULT_OK);
+                    // 메인 액티비티로 이동
+                    Intent mainIntent = new Intent(SetAlarm.this, AlarmActivity.class);
+                    startActivity(mainIntent);
+                    finish(); // 현재 액티비티 종료
                 }
 
             }
         });
-
+        cancel = findViewById(R.id.btnCancel);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 메인 화면으로 돌아가는 기능 구현
+                Intent intent = new Intent(getApplicationContext(), AlarmActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
 }
