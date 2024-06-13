@@ -7,4 +7,27 @@
     <style name="BottomNavigationView.TextAppearance" parent="TextAppearance.MaterialComponents.Body2">
         <item name="android:layout_marginTop">-1dp</item> <!-- 텍스트와 아이콘 간격 조정 -->
     </style>
+    <style name="ShapeAppearanceOverlay.FAB.Circular" parent="ShapeAppearanceOverlay.MaterialComponents.FloatingActionButton">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="RoundedFAB" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.FAB.Circular</item>
+        <!-- 색상 관련 속성 추가 -->
+        <item name="backgroundTint">@color/our_red</item>
+    </style>
+    <!-- NumberPicker 색상 변경 -->
+    <style name="Theme.AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/our_red</item>
+        <item name="colorPrimaryVariant">@color/our_red</item>
+        <item name="colorOnPrimary">@color/white</item>
+        ...
+    </style>
+
+    <style name="ThemeOverlay.NumberPicker" parent="Theme.AppTheme">
+        <!-- NumberPicker divider color -->
+        <item name="colorControlNormal">@color/our_red</item>
+    </style>
 </resources>

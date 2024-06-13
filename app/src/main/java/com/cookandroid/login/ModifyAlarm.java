@@ -15,6 +15,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,11 +26,11 @@ import java.util.Calendar;
 
 public class ModifyAlarm extends AppCompatActivity {
 
-    private TimePicker moditimePicker;
-    private EditText modieditText;
+    private TimePicker timePicker;
+    private EditText editText;
     private AlarmManager alarmManager;
     SQLiteDatabase mDb;
-    Button modiregist;
+    Button regist;
     private int hour, minute;
     public String alarmtime;
     private String text, ampm;
@@ -56,26 +59,26 @@ public class ModifyAlarm extends AppCompatActivity {
         // 기존 알람 정보 가져오기
         retrieveExistingAlarmInfo();
 
-        moditimePicker = findViewById(R.id.moditimepicker);
-        modieditText = findViewById(R.id.modieditText);
-        moditimePicker.setIs24HourView(false);
+        timePicker = findViewById(R.id.timepicker);
+        editText = findViewById(R.id.editText);
+        timePicker.setIs24HourView(false);
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        modiregist = findViewById(R.id.modiset);
-        modiregist.setOnClickListener(new View.OnClickListener() {
+        regist = findViewById(R.id.btnset);
+        regist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 기존 알람 취소
                 cancelExistingAlarm();
 
                 if (Build.VERSION.SDK_INT < 23) {
-                    hour = moditimePicker.getCurrentHour();
-                    minute = moditimePicker.getCurrentMinute();
+                    hour = timePicker.getCurrentHour();
+                    minute = timePicker.getCurrentMinute();
                 } else {
-                    hour = moditimePicker.getHour();
-                    minute = moditimePicker.getMinute();
+                    hour = timePicker.getHour();
+                    minute = timePicker.getMinute();
                 }
-                text = modieditText.getText().toString();
+                text = editText.getText().toString();
                 alarmtime = String.valueOf(hour) + minute;
 
                 ampm = (hour >= 12 && hour < 24) ? "오후" : "오전";
@@ -141,13 +144,13 @@ public class ModifyAlarm extends AppCompatActivity {
             int minute = cursor.getInt(cursor.getColumnIndexOrThrow(Databases.CreateDB.MINUTE));
             String drug = cursor.getString(cursor.getColumnIndexOrThrow(Databases.CreateDB.DRUGTEXT));
 
-            EditText drugtext = findViewById(R.id.modieditText);
+            EditText drugtext = findViewById(R.id.editText);
             drugtext.setText(drug);
 
-            TimePicker moditimepicker = findViewById(R.id.moditimepicker);
+            TimePicker timepicker = findViewById(R.id.timepicker);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                moditimepicker.setHour(hour);
-                moditimepicker.setMinute(minute);
+                timepicker.setHour(hour);
+                timepicker.setMinute(minute);
             }
             cursor.close();
             Log.i("ModifyAlarm", "알람 정보 로드 성공: alarmId=" + alarmId + ", drug=" + drug);

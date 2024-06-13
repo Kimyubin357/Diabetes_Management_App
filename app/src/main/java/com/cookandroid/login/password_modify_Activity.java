@@ -11,6 +11,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import android.view.Window;
+import android.view.WindowManager;
+import android.os.Build;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +36,13 @@ public class password_modify_Activity extends AppCompatActivity {
         buttonChange = findViewById(R.id.btn_change);
 
         mAuth = FirebaseAuth.getInstance();
+
+        // 상태 바 색상 변경
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(R.color.red_red_red));
+        }
 
         buttonChange.setOnClickListener(new View.OnClickListener() {
             @Override

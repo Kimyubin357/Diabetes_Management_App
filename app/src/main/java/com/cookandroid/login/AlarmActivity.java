@@ -12,6 +12,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.os.Build;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CursorAdapter;
@@ -34,6 +37,13 @@ public class AlarmActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.alarm_activity_main);
+
+        // 상태 바 색상 변경
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(R.color.red_red_red));
+        }
 
         FloatingActionButton floatingActionButton = findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -113,7 +123,8 @@ public class AlarmActivity extends AppCompatActivity {
     private Cursor getAlarmCursor() {
         dbHelper = AlarmDbHelper.getInstance(this);
         return dbHelper.getReadableDatabase()
-                .query(Databases.CreateDB.TABLE_NAME, null, null, null, null, null, null);
+                .query(Databases.CreateDB.TABLE_NAME, null, null, null, null, null,
+                        Databases.CreateDB.HOUR + " ASC, " + Databases.CreateDB.MINUTE + " ASC");
     }
 
     private class AlarmAdapter extends CursorAdapter {
@@ -133,13 +144,15 @@ public class AlarmActivity extends AppCompatActivity {
             ampmtext.setText(cursor.getString(cursor.getColumnIndexOrThrow(Databases.CreateDB.AMPM)));
 
             TextView hourtext = view.findViewById(R.id.hourText);
-            hourtext.setText(cursor.getString(cursor.getColumnIndexOrThrow(Databases.CreateDB.HOUR)));
+            int hour = cursor.getInt(cursor.getColumnIndexOrThrow(Databases.CreateDB.HOUR));
+            hourtext.setText(String.format("%02d", hour)); // 숫자를 두 자리로 포맷팅
 
             TextView colon = view.findViewById(R.id.colonText);
             colon.setText(":");
 
             TextView minutetext = view.findViewById(R.id.minuteText);
-            minutetext.setText(cursor.getString(cursor.getColumnIndexOrThrow(Databases.CreateDB.MINUTE)));
+            int minute = cursor.getInt(cursor.getColumnIndexOrThrow(Databases.CreateDB.MINUTE));
+            minutetext.setText(String.format("%02d", minute)); // 숫자를 두 자리로 포맷팅
 
             TextView drug = view.findViewById(R.id.drug_text);
             drug.setText(cursor.getString(cursor.getColumnIndexOrThrow(Databases.CreateDB.DRUGTEXT)));

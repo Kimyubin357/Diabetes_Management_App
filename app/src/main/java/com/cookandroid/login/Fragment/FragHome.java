@@ -6,12 +6,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -175,25 +178,32 @@ public class FragHome extends Fragment {
     }
 
     public static double convertKcal(Context context, String imageName) throws JSONException {
-    // food 상세 정보 mapping
-    String jsonData = loadJSONFromAsset(context, "label_mapping_nutrition.json");
-    JSONObject jsonObject = new JSONObject(jsonData);
+        // food 상세 정보 mapping
+        String jsonData = loadJSONFromAsset(context, "label_mapping_nutrition.json");
+        JSONObject jsonObject = new JSONObject(jsonData);
         Double value;
-    try{
-        JSONObject foodData = jsonObject.getJSONObject(imageName);
-        value = foodData.getDouble("cal");
-        Log.i("TAG",imageName+value);
-    }catch (Exception ex){
-        ex.printStackTrace();
-        value =0.0;
+        try{
+            JSONObject foodData = jsonObject.getJSONObject(imageName);
+            value = foodData.getDouble("cal");
+            Log.i("TAG",imageName+value);
+        }catch (Exception ex){
+            ex.printStackTrace();
+            value =0.0;
+        }
+        return value;
     }
-    return value;
-}
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView");
         view = inflater.inflate(R.layout.frag_home, container, false);
+
+        // 상태 바 색상을 빨간색으로 변경
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getActivity().getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(getContext(), R.color.red_red_red)); // 빨간색으로 설정
+        }
 
         // 버튼 찾기
         buttonAlarm = view.findViewById(R.id.button_alarm);

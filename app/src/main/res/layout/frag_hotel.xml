@@ -6,165 +6,165 @@
     android:layout_marginBottom="125dp"
     android:fillViewport="true"
     tools:context=".ModifyActivity">
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#FFFFFF"
-    tools:context=".ModifyActivity">
-
-    <LinearLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="#FF0000"
-        android:padding="16dp">
+        android:background="#FFFFFF"
+        tools:context=".ModifyActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#DC0716">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="프로필 수정"
+                android:background="#DC0716"
+                android:textStyle="bold"
+                android:textSize="32sp"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:layout_marginTop="40dp" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="프로필 수정"
-            android:textStyle="bold"
-            android:textSize="32sp"
+            android:text="기본설정"
+            android:background="#E0E0E0"
+            android:padding="8dp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/editTextName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="이름"
+            android:padding="16dp"
+            android:background="#FFFFFF" />
+
+        <EditText
+            android:id="@+id/editTextBirthday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="생년월일"
+            android:focusable="false"
+            android:padding="16dp"
+            android:background="#FFFFFF" />
+
+        <EditText
+            android:id="@+id/editTextHeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="키(cm)"
+            android:inputType="numberDecimal"
+            android:padding="16dp"
+            android:background="#FFFFFF" />
+
+        <EditText
+            android:id="@+id/editTextWeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="몸무게(kg)"
+            android:inputType="numberDecimal"
+            android:padding="16dp"
+            android:background="#FFFFFF" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="성별"
+            android:padding="8dp"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/radioGroupGender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <RadioButton
+                android:id="@+id/radioButtonMale"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="남성" />
+
+            <RadioButton
+                android:id="@+id/radioButtonFemale"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="여성" />
+        </RadioGroup>
+
+        <android.widget.Button
+            android:id="@+id/save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="저장"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:background="#FF0000"
             android:textColor="#FFFFFF"
+            android:padding="10dp"
+            android:drawablePadding="8dp"
             android:gravity="center"
-            android:padding="8dp" />
+            android:drawableLeft="@android:drawable/ic_menu_save" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="회원설정"
+            android:background="#E0E0E0"
+            android:padding="8dp"
+            android:textStyle="bold" />
+
+        <android.widget.Button
+            android:id="@+id/email_chan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="이메일 변경"
+            android:background="#FFFFFF"
+            android:padding="16dp"
+            android:gravity="start"
+            android:drawableEnd="@android:drawable/ic_menu_edit" />
+
+        <android.widget.Button
+            android:id="@+id/pass_chan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="비밀번호 변경"
+            android:background="#FFFFFF"
+            android:padding="16dp"
+            android:gravity="start"
+            android:drawableEnd="@android:drawable/ic_menu_edit" />
+
+        <android.widget.Button
+            android:id="@+id/logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="로그아웃"
+            android:background="#FFFFFF"
+            android:padding="16dp"
+            android:gravity="start"
+            android:drawableEnd="@android:drawable/ic_menu_revert" />
+
+        <android.widget.Button
+            android:id="@+id/member_out"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="회원탈퇴"
+            android:background="#FFFFFF"
+            android:padding="16dp"
+            android:gravity="start"
+            android:drawableEnd="@android:drawable/ic_menu_delete" />
+
+
     </LinearLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="기본설정"
-        android:background="#E0E0E0"
-        android:padding="8dp"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/editTextName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="이름"
-        android:padding="16dp"
-        android:background="#FFFFFF" />
-
-    <EditText
-        android:id="@+id/editTextBirthday"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="생년월일"
-        android:focusable="false"
-        android:padding="16dp"
-        android:background="#FFFFFF" />
-
-    <EditText
-        android:id="@+id/editTextHeight"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="키(cm)"
-        android:inputType="numberDecimal"
-        android:padding="16dp"
-        android:background="#FFFFFF" />
-
-    <EditText
-        android:id="@+id/editTextWeight"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="몸무게(kg)"
-        android:inputType="numberDecimal"
-        android:padding="16dp"
-        android:background="#FFFFFF" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="성별"
-        android:padding="8dp"
-        android:textStyle="bold" />
-
-    <RadioGroup
-        android:id="@+id/radioGroupGender"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp">
-
-        <RadioButton
-            android:id="@+id/radioButtonMale"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="남성" />
-
-        <RadioButton
-            android:id="@+id/radioButtonFemale"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="여성" />
-    </RadioGroup>
-
-    <android.widget.Button
-        android:id="@+id/save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="저장"
-        android:textSize="20sp"
-        android:layout_gravity="center"
-        android:background="#FF0000"
-        android:textColor="#FFFFFF"
-        android:padding="10dp"
-        android:drawablePadding="8dp"
-        android:gravity="center"
-        android:drawableLeft="@android:drawable/ic_menu_save" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="회원설정"
-        android:background="#E0E0E0"
-        android:padding="8dp"
-        android:textStyle="bold" />
-
-    <android.widget.Button
-        android:id="@+id/email_chan"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="이메일 변경"
-        android:background="#FFFFFF"
-        android:padding="16dp"
-        android:gravity="start"
-        android:drawableEnd="@android:drawable/ic_menu_edit" />
-
-    <android.widget.Button
-        android:id="@+id/pass_chan"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="비밀번호 변경"
-        android:background="#FFFFFF"
-        android:padding="16dp"
-        android:gravity="start"
-        android:drawableEnd="@android:drawable/ic_menu_edit" />
-
-    <android.widget.Button
-        android:id="@+id/logout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="로그아웃"
-        android:background="#FFFFFF"
-        android:padding="16dp"
-        android:gravity="start"
-        android:drawableEnd="@android:drawable/ic_menu_revert" />
-
-    <android.widget.Button
-        android:id="@+id/member_out"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="회원탈퇴"
-        android:background="#FFFFFF"
-        android:padding="16dp"
-        android:gravity="start"
-        android:drawableEnd="@android:drawable/ic_menu_delete" />
-
-
-</LinearLayout>
 </ScrollView>
