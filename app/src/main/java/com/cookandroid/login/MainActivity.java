@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
 
                                     // 모델 로드 및 준비
-                                    Bitmap bitmap2 = loadBitmap("image.jpg");
+                                    Bitmap bitmap2 = loadBitmap("egg-1.png");
                                     if (bitmap2 == null) {
                                         return;
                                     }
